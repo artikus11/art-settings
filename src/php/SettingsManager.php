@@ -110,38 +110,40 @@ class SettingsManager {
 
 
 	public function enqueue_assets( string $hook_suffix ): void {
-
-		// Подключаем стили и скрипты только на своей странице настроек
 		$menu_slug = $this->config['menu']['menu_slug'] ?? '';
 		if ( empty( $menu_slug ) || ! str_contains( $hook_suffix, $menu_slug ) ) {
 			return;
 		}
 
-		if ( 'toplevel_page_' . $menu_slug !== $hook_suffix ) {
-			return;
-		}
-
-		// Базовый URL к папке библиотеки
-		$assets_url = plugin_dir_url( dirname( __DIR__, 1 ) . '/art-settings.php' ) . 'assets/';
-
-		// Если подключение идет через Composer внутри другого плагина, вычисляем URL относительно директории
 		$base_dir = dirname( __DIR__, 2 );
-		$url      = content_url( str_replace( wp_normalize_path( WP_CONTENT_DIR ), '', wp_normalize_path( $base_dir ) ) ) . '/assets/';
+		$base_url = content_url( str_replace( wp_normalize_path( WP_CONTENT_DIR ), '', wp_normalize_path( $base_dir ) ) ) . '/assets/';
 
-		wp_enqueue_style(
-			'art-settings',
-			src : $url . 'css/ast-admin-style.css',
-			deps: [],
-			ver : '1.0.0'
-		);
+		$assets = [
+			'style'  => [
+				'handle'    => 'ast-admin-style',
+				'rel_path'  => 'css/ast-admin-style.min.css',
+				'deps'      => [],
+				'in_footer' => false,
+			],
+			'script' => [
+				'handle'    => 'ast-admin-script',
+				'rel_path'  => 'js/ast-admin-script.min.js',
+				'deps'      => [ 'jquery' ],
+				'in_footer' => true,
+			],
+		];
 
-		wp_enqueue_script(
-			'art-settings',
-			$url . 'js/art-settings.js',
-			[ 'jquery' ],
-			'1.0.0',
-			true
-		);
+		foreach ( $assets as $type => $asset ) {
+			$file_path = $base_dir . '/assets/' . $asset['rel_path'];
+			$version   = file_exists( $file_path ) ? (string) filemtime( $file_path ) : '1.0.0';
+			$file_url  = $base_url . $asset['rel_path'];
+
+			if ( 'style' === $type ) {
+				wp_enqueue_style( $asset['handle'], $file_url, $asset['deps'], $version );
+			} else {
+				wp_enqueue_script( $asset['handle'], $file_url, $asset['deps'], $version, $asset['in_footer'] );
+			}
+		}
 	}
 
 
