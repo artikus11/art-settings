@@ -88,6 +88,7 @@ class PageRenderer {
 		}
 
 		extract( $data );
+
 		include $template_path;
 	}
 

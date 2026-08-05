@@ -1,5 +1,8 @@
 <?php
 /**
+ *
+ * Tabs template.
+ *
  * @var array  $tabs
  * @var string $active_tab
  * @var string $menu_slug
@@ -9,11 +12,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-$wrapper_classes = [
-	'skl-core__tabs-wrapper',
-	'hide-if-no-js',
-	'tab-count-' . count( $tabs ),
-];
+$wrapper_classes = apply_filters(
+	'ast_tabs_wrapper_classes',
+	[
+		'ast__tabs-wrapper',
+		'hide-if-no-js',
+		'ast__tab-count-' . count( $tabs ),
+	]
+);
 ?>
 
 <nav class="<?php echo esc_attr( implode( ' ', $wrapper_classes ) ); ?>">

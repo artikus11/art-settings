@@ -1,7 +1,7 @@
 <?php
 /**
  * @var string $message
- * @var string $type    success|error|warning|info
+ * @var string $type success|error|warning|info
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -16,6 +16,6 @@ $type_class = match ( $type ) {
 };
 ?>
 
-<div class="notice <?php echo esc_attr( $type_class ); ?> is-dismissible">
+<div class="notice <?php echo esc_attr( $type_class ); ?> is-dismissible ast__notice ast__notice--<?php echo esc_attr( $type ); ?>">
 	<p><strong><?php echo esc_html( $message ); ?></strong></p>
 </div>
