@@ -117,7 +117,31 @@ class SettingsManager {
 			return;
 		}
 
-		// Логика подключения билда из /assets/ (css/js)
+		if ( 'toplevel_page_' . $menu_slug !== $hook_suffix ) {
+			return;
+		}
+
+		// Базовый URL к папке библиотеки
+		$assets_url = plugin_dir_url( dirname( __DIR__, 1 ) . '/art-settings.php' ) . 'assets/';
+
+		// Если подключение идет через Composer внутри другого плагина, вычисляем URL относительно директории
+		$base_dir = dirname( __DIR__, 2 );
+		$url      = content_url( str_replace( wp_normalize_path( WP_CONTENT_DIR ), '', wp_normalize_path( $base_dir ) ) ) . '/assets/';
+
+		wp_enqueue_style(
+			'art-settings',
+			src : $url . 'css/ast-admin-style.css',
+			deps: [],
+			ver : '1.0.0'
+		);
+
+		wp_enqueue_script(
+			'art-settings',
+			$url . 'js/art-settings.js',
+			[ 'jquery' ],
+			'1.0.0',
+			true
+		);
 	}
 
 
