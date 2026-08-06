@@ -29,6 +29,7 @@ class SettingsManager {
 		}
 
 		add_action( 'admin_menu', [ $this, 'register_menu' ] );
+		add_filter( 'admin_body_class', [ $this, 'admin_body_class' ] );
 		add_action( 'admin_init', [ $this, 'handle_save' ] );
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_assets' ] );
 	}
@@ -68,6 +69,7 @@ class SettingsManager {
 
 
 	public function handle_save(): void {
+
 		$menu_slug = $this->config['menu']['menu_slug'] ?? '';
 
 		if ( ! isset( $_GET['page'] ) || $_GET['page'] !== $menu_slug ) {
@@ -89,7 +91,7 @@ class SettingsManager {
 
 		// Читаем напрямую из $_POST по ID зарегистрированных полей
 		foreach ( $this->get_registered_fields() as $field_id => $field_object ) {
-			$raw_value              = $_POST[ $field_id ] ?? null;
+			$raw_value               = $_POST[ $field_id ] ?? null;
 			$new_fields[ $field_id ] = $field_object->sanitize( $raw_value );
 		}
 
@@ -110,6 +112,7 @@ class SettingsManager {
 
 
 	public function enqueue_assets( string $hook_suffix ): void {
+
 		$menu_slug = $this->config['menu']['menu_slug'] ?? '';
 		if ( empty( $menu_slug ) || ! str_contains( $hook_suffix, $menu_slug ) ) {
 			return;
@@ -147,6 +150,21 @@ class SettingsManager {
 	}
 
 
+	public function admin_body_class( $body_class ): string {
+
+		$menu_slug = $this->config['menu']['menu_slug'] ?? '';
+		$screen    = get_current_screen();
+
+		if ( 'toplevel_page_' . $menu_slug !== $screen->id ) {
+			return $body_class;
+		}
+
+		$body_class .= ' ast';
+
+		return $body_class;
+	}
+
+
 	/**
 	 * Нормализация табов: приводит классы табов и массивы к единому виду
 	 */
@@ -156,14 +174,15 @@ class SettingsManager {
 
 		foreach ( $this->config['tabs'] ?? [] as $slug => $tab_item ) {
 			if ( is_object( $tab_item ) && method_exists( $tab_item, 'get_sections' ) ) {
-				$label    = method_exists( $tab_item, 'get_label' ) ? $tab_item->get_label() : $slug;
-				$sections = $tab_item->get_sections();
+				$label       = method_exists( $tab_item, 'get_label' ) ? $tab_item->get_label() : $slug;
+				$sections    = $tab_item->get_sections();
+				$save_button = method_exists( $tab_item, 'has_save_button' ) ? $tab_item->has_save_button() : true;
 			} else {
-				$label    = $tab_item['label'] ?? $slug;
-				$sections = $tab_item['sections'] ?? [];
+				$label       = $tab_item['label'] ?? $slug;
+				$sections    = $tab_item['sections'] ?? [];
+				$save_button = $tab_item['save_button'] ?? true;
 			}
 
-			// Проставляем ID полям из ключей массива секции
 			foreach ( $sections as $section_key => &$section ) {
 				foreach ( $section['fields'] ?? [] as $field_id => $field_object ) {
 					if ( is_object( $field_object ) && method_exists( $field_object, 'set_id' ) ) {
@@ -173,8 +192,9 @@ class SettingsManager {
 			}
 
 			$normalized[ $slug ] = [
-				'label'    => $label,
-				'sections' => $sections,
+				'label'       => $label,
+				'save_button' => (bool) $save_button,
+				'sections'    => $sections,
 			];
 		}
 
@@ -185,7 +205,7 @@ class SettingsManager {
 	/**
 	 * Возвращает плоский список полей для цикла сохранения
 	 *
-	 * @return array<string, \Art\Settings\Fields\AbstractField>
+	 * @return array<string, \Art\Settings\Fields\Field>
 	 */
 	protected function get_registered_fields(): array {
 

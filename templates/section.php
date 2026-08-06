@@ -16,7 +16,7 @@ $fields      = $section['fields'] ?? [];
 
 <div class="ast__section">
 	<?php if ( ! empty( $title ) ) : ?>
-		<h2 class="ast__section-title"><?php echo esc_html( $title ); ?></h2>
+		<h3 class="ast__section-title"><?php echo esc_html( $title ); ?></h3>
 	<?php endif; ?>
 	
 	<?php if ( ! empty( $description ) ) : ?>

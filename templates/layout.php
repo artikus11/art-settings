@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 ?>
 
-<div class="wrap ast">
+<div class="ast__wrapper">
 	<div class="ast__header">
 		<div class="ast__title-section">
 			<h1 class="ast__title"><?php echo esc_html( $page_title ); ?></h1>
@@ -50,15 +50,24 @@ if ( ! defined( 'ABSPATH' ) ) {
 			       name="current_tab"
 			       value="<?php echo esc_attr( $active_tab ); ?>">
 			
+			<div class="ast__section-wrapper">
+				<?php
+				$current_tab_data = $tabs[ $active_tab ] ?? [];
+				$current_sections = $current_tab_data['sections'] ?? [];
+				
+				foreach ( $current_sections as $section ) :
+					$renderer->render_section( $section, $saved_data );
+				endforeach;
+				?>
+			</div>
+			
 			<?php
-			$current_sections = $tabs[ $active_tab ]['sections'] ?? [];
-			
-			foreach ( $current_sections as $section ) :
-				$renderer->render_section( $section, $saved_data );
-			endforeach;
-			
-			submit_button();
+			$has_save_button = $current_tab_data['save_button'] ?? true;
+			if ( $has_save_button ) :
+				submit_button();
+			endif;
 			?>
+		
 		</form>
 	</div>
 </div>

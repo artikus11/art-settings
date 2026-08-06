@@ -1,0 +1,101 @@
+.ast {
+  #wpcontent {
+    padding-left: 0;
+  }
+
+  .hr-separator {
+    margin-top: 20px;
+    margin-bottom: 15px;
+  }
+
+  .health-check-accordion-heading {
+    display: flex;
+    background: #fff;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 0 0 1.5em;
+  }
+
+
+  .health-check-accordion-trigger {
+    padding: 1em 2.5em 1em 1.5em;
+    width: inherit;
+  }
+
+  .health-check-accordion-panel--dashboard,
+  .health-check-accordion-panel--modify {
+    margin-bottom: 1.5rem;
+    padding: 1.5em 1.5em;
+  }
+
+  .health-check-accordion-panel--dashboard {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .button {
+    position: relative;
+    transition: all 0.2s ease;
+
+    .dashicons {
+      line-height: 1;
+      vertical-align: top;
+    }
+
+    &.htmx-request {
+      pointer-events: none;
+      color: transparent !important;
+      background: inherit;
+
+
+      &::after {
+        content: "";
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 16px;
+        height: 16px;
+        margin-left: -8px;
+        margin-top: -8px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top-color: #fff;
+        animation: htmx-btn-spin 0.6s linear infinite;
+      }
+    }
+
+
+    &.button-secondary {
+      &.htmx-request {
+        &::after {
+          border: 2px solid rgba(0, 0, 0, 0.1);
+          border-top-color: #2271b1;
+        }
+      }
+    }
+  }
+
+  .card {
+    max-width: 100%;
+    margin-top: 20px;
+    padding: 15px 20px;
+    background: #fff;
+    border: 1px solid #ccd0d4;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, .04);
+  }
+}
+
+@media screen and (max-width: 782px) {
+  .skl-core__body {
+    margin: 0 12px;
+    width: auto;
+  }
+}
+
+@media only screen and (max-width: 1004px) {
+  .skl-core__body {
+    margin: 0 22px;
+    width: auto;
+  }
+}
