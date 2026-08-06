@@ -65,9 +65,11 @@ class PageRenderer {
 	 * Рендерит отдельную секцию
 	 */
 	public function render_section( array $section, array $saved_data ): void {
+
 		// Если у секции задан свой кастомный callback для отрисовки
 		if ( isset( $section['callback'] ) && is_callable( $section['callback'] ) ) {
 			call_user_func( $section['callback'], $section, $saved_data, $this );
+
 			return;
 		}
 
@@ -113,22 +115,22 @@ class PageRenderer {
 
 	public function get_template_path( string $template_name ): string {
 
-		// 1. Проверяем, задан ли кастомный базовый путь в конфиге
+		$template_name = ltrim( $template_name, '/\\' );
+
+		// 1. Если задан путь в конфиге — ищем сначала там (в плагине)
 		if ( ! empty( $this->config['template_path'] ) ) {
-			$base_dir = rtrim( $this->config['template_path'], '/\\' );
-		} else {
-			// 2. Дефолтный путь: корень библиотеки (3 уровня вверх от src/php/Renderers)
-			$base_dir = dirname( __DIR__, 3 ) . '/templates';
+			$custom_base = rtrim( $this->config['template_path'], '/\\' );
+			$custom_path = $custom_base . '/' . $template_name;
+
+			if ( file_exists( $custom_path ) ) {
+				return (string) apply_filters( 'art_settings_template_path', $custom_path, $template_name, $this->config );
+			}
 		}
 
-		$template_path = $base_dir . '/' . ltrim( $template_name, '/\\' );
+		// 2. Фолбэк на дефолтную папку библиотеки
+		$default_base = dirname( __DIR__, 3 ) . '/templates';
+		$default_path = $default_base . '/' . $template_name;
 
-		// 3. Возможность точечного переопределения через WP-фильтр
-		return (string) apply_filters(
-			'art_settings_template_path',
-			$template_path,
-			$template_name,
-			$this->config
-		);
+		return (string) apply_filters( 'art_settings_template_path', $default_path, $template_name, $this->config );
 	}
 }
