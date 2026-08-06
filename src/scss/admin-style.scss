@@ -2,6 +2,8 @@
 @import "global";
 
 .ast {
+  $this: &;
+
   &__header {
     text-align: center;
     margin: 0 0 1rem;
@@ -28,15 +30,15 @@
     display: inline-grid;
     grid-template-columns: repeat(2, 1fr);
 
-    &.tab-count-3 {
+    &#{$this}__tab-count-3 {
       grid-template-columns: repeat(3, 1fr);
     }
 
-    &.tab-count-4 {
+    &#{$this}__tab-count-4 {
       grid-template-columns: repeat(4, 1fr);
     }
 
-    &.tab-count-5 {
+    &#{$this}__tab-count-5 {
       grid-template-columns: repeat(5, 1fr);
     }
   }
