@@ -65,7 +65,13 @@ class PageRenderer {
 	 * Рендерит отдельную секцию
 	 */
 	public function render_section( array $section, array $saved_data ): void {
+		// Если у секции задан свой кастомный callback для отрисовки
+		if ( isset( $section['callback'] ) && is_callable( $section['callback'] ) ) {
+			call_user_func( $section['callback'], $section, $saved_data, $this );
+			return;
+		}
 
+		// Иначе стандартный рендер через шаблон section.php
 		$this->render_template( 'section.php', [
 			'section'    => $section,
 			'saved_data' => $saved_data,
