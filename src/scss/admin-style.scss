@@ -6,7 +6,7 @@
 
   &__header {
     text-align: center;
-    margin: 0 0 1rem;
+    margin: 0 0 2em;
     background: #fff;
     border-bottom: 1px solid #dcdcde;
   }
@@ -334,6 +334,12 @@
       opacity: 1;
       visibility: visible;
     }
+  }
+
+  &__section-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5em;
   }
 
   &__section {
