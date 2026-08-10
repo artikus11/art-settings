@@ -21,6 +21,12 @@
     &--info {
       margin-bottom: 1rem;
       gap: 12px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      clear: both;
+      padding-top: 8px;
     }
 
   }
