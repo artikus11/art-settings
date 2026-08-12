@@ -155,7 +155,13 @@ class SettingsManager {
 		$menu_slug = $this->config['menu']['menu_slug'] ?? '';
 		$screen    = get_current_screen();
 
-		if ( 'toplevel_page_' . $menu_slug !== $screen->id ) {
+		if ( ! $screen ) {
+			return $body_class;
+		}
+
+		$is_our_page = str_ends_with( $screen->id, '_page_' . $menu_slug ) || $screen->id === 'toplevel_page_' . $menu_slug;
+
+		if ( ! $is_our_page ) {
 			return $body_class;
 		}
 
