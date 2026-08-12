@@ -10,7 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 $rows  = (int) $field->get_attribute( 'rows', 5 );
 $cols  = (int) $field->get_attribute( 'cols', 50 );
-$class = (int) $field->get_attribute( 'class', 'large-text' );
+$class = (string) $field->get_attribute( 'class', 'large-text' );
 ?>
 	
 	<textarea id="<?php echo esc_attr( $field->get_id() ); ?>"

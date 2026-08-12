@@ -8,7 +8,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-$class = (int) $field->get_attribute( 'class', 'small-text' );
+$class = (string) $field->get_attribute( 'class', 'small-text' );
 ?>
 	
 	<input type="number"

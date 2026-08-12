@@ -1,12 +1,13 @@
 <?php
 /**
  * @var \Art\Settings\Fields\ColorPicker $field
- * @var mixed $value
+ * @var mixed                            $value
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
+
 wp_enqueue_style( 'wp-color-picker' );
 wp_enqueue_script( 'wp-color-picker' );
 
@@ -17,8 +18,13 @@ wp_add_inline_script(
 	'jQuery(document).ready(function($){ $(".ast-color-picker").wpColorPicker(); });',
 	'after'
 );
-?>
 
+wp_add_inline_style(
+	'wp-color-picker',
+	'.wp-picker-open + .wp-picker-input-wrap { display: flex !important; }'
+);
+
+?>
 	<input type="text"
 	       id="<?php echo esc_attr( $field->get_id() ); ?>"
 	       name="<?php echo esc_attr( $field->get_id() ); ?>"
