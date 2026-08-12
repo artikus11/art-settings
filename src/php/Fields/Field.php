@@ -25,6 +25,10 @@ abstract class Field {
 		$this->default     = $args['default'] ?? null;
 		$this->description = $args['description'] ?? '';
 		$this->attributes  = $args['attributes'] ?? [];
+
+		unset( $args['label'], $args['default'], $args['description'], $args['attributes'] );
+
+		$this->attributes = array_merge( $args, $this->attributes );
 	}
 
 
@@ -68,10 +72,16 @@ abstract class Field {
 	}
 
 
+	public function get_attribute( string $key, mixed $default = null ): mixed {
+
+		return $this->attributes[ $key ] ?? $default;
+	}
+
+
 	/**
 	 * Формирует HTML-строку произвольных атрибутов (placeholder, min, max, readonly)
 	 */
-	public function get_rendered_attributes(): string {
+	public function get_rendered_attributes( array $exclude = [ 'rows', 'cols' ] ): string {
 
 		if ( empty( $this->attributes ) ) {
 			return '';
@@ -79,6 +89,10 @@ abstract class Field {
 
 		$html = [];
 		foreach ( $this->attributes as $key => $value ) {
+			if ( in_array( $key, $exclude, true ) ) {
+				continue;
+			}
+
 			if ( is_bool( $value ) ) {
 				if ( $value ) {
 					$html[] = esc_attr( $key );
@@ -88,7 +102,7 @@ abstract class Field {
 			}
 		}
 
-		return ' ' . implode( ' ', $html );
+		return empty( $html ) ? '' : ' ' . implode( ' ', $html );
 	}
 
 

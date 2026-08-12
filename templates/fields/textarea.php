@@ -1,19 +1,23 @@
 <?php
 /**
  * @var \Art\Settings\Fields\Textarea $field
- * @var mixed $value
+ * @var mixed                         $value
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
-?>
 
+$rows  = (int) $field->get_attribute( 'rows', 5 );
+$cols  = (int) $field->get_attribute( 'cols', 50 );
+$class = (int) $field->get_attribute( 'class', 'large-text' );
+?>
+	
 	<textarea id="<?php echo esc_attr( $field->get_id() ); ?>"
 	          name="<?php echo esc_attr( $field->get_id() ); ?>"
-	          rows="5"
-	          cols="50"
-	          class="large-text"
+	          rows="<?php echo esc_attr( $rows ); ?>"
+	          cols="<?php echo esc_attr( $cols ); ?>"
+	          class="<?php echo esc_attr( $class ); ?>"
           <?php echo $field->get_rendered_attributes(); ?>><?php echo esc_textarea( (string) $value ); ?></textarea>
 
 <?php if ( ! empty( $field->get_description() ) ) : ?>
