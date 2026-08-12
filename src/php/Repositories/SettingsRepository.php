@@ -15,34 +15,20 @@ class SettingsRepository {
 	}
 
 
-	/**
-	 * Получает плоский массив всех настроек из wp_options.
-	 *
-	 * @return array<string, mixed>
-	 */
 	public function get(): array {
 
 		if ( null !== $this->cache ) {
 			return $this->cache;
 		}
 
-		$options = get_option( $this->option_key, [] );
+		$options     = get_option( $this->option_key, [] );
 
-		if ( ! is_array( $options ) ) {
-			$options = [];
-		}
-
-		$this->cache = $options;
+		$this->cache = is_array( $options ) ? $options : [];
 
 		return $this->cache;
 	}
 
 
-	/**
-	 * Сохраняет плоский массив настроек в wp_options.
-	 *
-	 * @param  array<string, mixed> $data
-	 */
 	public function update( array $data ): bool {
 
 		$this->cache = $data;
@@ -51,20 +37,43 @@ class SettingsRepository {
 	}
 
 
-	/**
-	 * Возвращает значение конкретного поля по его ID.
-	 */
 	public function get_field_value( string $field_id, mixed $default = null ): mixed {
 
 		$options = $this->get();
 
-		return $options[ $field_id ] ?? $default;
+		if ( array_key_exists( $field_id, $options ) && '' !== $options[ $field_id ] && null !== $options[ $field_id ] ) {
+			return $options[ $field_id ];
+		}
+
+		return $default;
 	}
 
 
-	/**
-	 * Сбрасывает сохраненные опции до пустого массива [].
-	 */
+	// Хелперы поверх get_field_value
+	public function get_string( string $field_id, string $default = '' ): string {
+
+		$value = $this->get_field_value( $field_id, $default );
+
+		return is_scalar( $value ) ? (string) $value : $default;
+	}
+
+
+	public function get_int( string $field_id, int $default = 0 ): int {
+
+		$value = $this->get_field_value( $field_id, $default );
+
+		return is_numeric( $value ) ? (int) $value : $default;
+	}
+
+
+	public function get_bool( string $field_id, bool $default = false ): bool {
+
+		$value = $this->get_field_value( $field_id, $default );
+
+		return filter_var( $value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE ) ?? $default;
+	}
+
+
 	public function reset(): bool {
 
 		$this->cache = [];
@@ -73,9 +82,6 @@ class SettingsRepository {
 	}
 
 
-	/**
-	 * Полностью удаляет опцию из базы данных wp_options.
-	 */
 	public function delete(): bool {
 
 		$this->cache = null;
@@ -84,9 +90,6 @@ class SettingsRepository {
 	}
 
 
-	/**
-	 * Сбрасывает локальный кэш процесса.
-	 */
 	public function clear_cache(): void {
 
 		$this->cache = null;
