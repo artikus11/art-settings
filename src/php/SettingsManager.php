@@ -4,6 +4,7 @@ namespace Art\Settings;
 
 use Art\Settings\Repositories\SettingsRepository;
 use Art\Settings\Renderers\PageRenderer;
+use JetBrains\PhpStorm\NoReturn;
 
 class SettingsManager {
 
@@ -30,7 +31,7 @@ class SettingsManager {
 
 		add_action( 'admin_menu', [ $this, 'register_menu' ] );
 		add_filter( 'admin_body_class', [ $this, 'admin_body_class' ] );
-		add_action( 'admin_init', [ $this, 'handle_save' ] );
+		add_action( 'admin_init', [ $this, 'handle_action' ] );
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_assets' ] );
 	}
 
@@ -68,7 +69,7 @@ class SettingsManager {
 	}
 
 
-	public function handle_save(): void {
+	public function handle_action(): void {
 
 		$menu_slug = $this->config['menu']['menu_slug'] ?? '';
 
@@ -87,28 +88,65 @@ class SettingsManager {
 			wp_die( esc_html__( 'У вас недостаточно прав для изменения настроек.', 'art-settings' ) );
 		}
 
+		$current_tab = sanitize_text_field( $_POST['current_tab'] ?? '' );
+		$action      = sanitize_text_field( $_POST['art_settings_action'] ?? 'save' );
+
+		if ( 'reset' === $action ) {
+			$this->process_reset( $menu_slug, $current_tab );
+		} else {
+			$this->process_update( $menu_slug, $current_tab );
+		}
+	}
+
+
+	/**
+	 * Обработка сохранения настроек
+	 */
+	#[NoReturn]
+	protected function process_update( string $menu_slug, string $current_tab ): void {
 
 		$settings = $this->repository->get();
 
 		foreach ( $this->get_registered_fields() as $field_id => $field_object ) {
-
 			$is_in_post = array_key_exists( $field_id, $_POST );
-			$is_boolean = $field_object instanceof \Art\Settings\Fields\Checkbox;
+			$is_boolean = $field_object instanceof \Art\Settings\Fields\Checkbox
+			              || $field_object instanceof \Art\Settings\Fields\Toggle;
 
 			if ( $is_in_post || $is_boolean ) {
-				$raw_value            = $_POST[ $field_id ] ?? null;
+				$raw_value             = $_POST[ $field_id ] ?? null;
 				$settings[ $field_id ] = $field_object->sanitize( $raw_value );
 			}
 		}
 
-		// 3. Сохраняем объединенный плоский массив
 		$this->repository->update( $settings );
+
+		$this->redirect( $menu_slug, $current_tab, 'settings-updated' );
+	}
+
+
+	/**
+	 * Обработка сброса всех настроек
+	 */
+	#[NoReturn]
+	protected function process_reset( string $menu_slug, string $current_tab ): void {
+
+		$this->repository->reset();
+
+		$this->redirect( $menu_slug, $current_tab, 'settings-reset' );
+	}
+
+
+	/**
+	 * Вспомогательный редирект с флагом статуса
+	 */
+	#[NoReturn]
+	protected function redirect( string $menu_slug, string $current_tab, string $status_flag ): void {
 
 		$redirect_url = add_query_arg(
 			[
-				'page'             => $menu_slug,
-				'tab'              => sanitize_text_field( $_POST['current_tab'] ?? '' ),
-				'settings-updated' => 'true',
+				'page'       => $menu_slug,
+				'tab'        => $current_tab,
+				$status_flag => 'true',
 			],
 			admin_url( 'admin.php' )
 		);

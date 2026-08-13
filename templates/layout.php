@@ -10,12 +10,27 @@
  * @var array                                $saved_data
  * @var string                               $nonce_action
  * @var string                               $nonce_name
+ * @var array                                $config
  * @var \Art\Settings\Renderers\PageRenderer $renderer
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
+
+$info_items = apply_filters(
+	'ast_info_items',
+	array_filter( [
+		'cron'    => [
+			'label' => 'Тип крона',
+			'value' => ( defined( 'DISABLE_WP_CRON' ) && DISABLE_WP_CRON ) ? 'System Cron' : 'WP-Cron',
+		],
+		'version' => ! empty( $config['menu']['plugin_version'] ) ? [
+			'label' => 'Версия плагина',
+			'value' => $config['menu']['plugin_version'],
+		] : null,
+	] )
+);
 ?>
 
 <div class="ast__wrapper">
@@ -25,7 +40,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 		</div>
 		
 		<div class="ast__title-section--info">
-			<?php do_action( 'ast_title_section_info' ); ?>
+			<?php do_action( 'ast_before_info_items' ); ?>
+			
+			<?php foreach ( $info_items as $item ) : ?>
+				<div class="info-item">
+					<strong><?php echo esc_html( $item['label'] ); ?>: </strong><span><?php echo esc_html( $item['value'] ); ?></span>
+				</div>
+			<?php endforeach; ?>
+			
+			<?php do_action( 'ast_after_info_items' ); ?>
 		</div>
 		
 		<?php $renderer->render_tabs( $tabs, $active_tab, $menu_slug ); ?>
@@ -64,9 +87,19 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<?php
 			$has_save_button = $current_tab_data['save_button'] ?? true;
 			if ( $has_save_button ) :
-				submit_button();
-			endif;
-			?>
+				?>
+				<div class="ast__actions">
+					<?php submit_button('Сохранить изменения', 'primary', 'submit', false ); ?>
+					
+					<button type="submit"
+					        name="art_settings_action"
+					        value="reset"
+					        class="button button-link-delete"
+					        onclick="return confirm('Вы уверены, что хотите сбросить все настройки к значениям по умолчанию?');">
+						Сбросить настройки>
+					</button>
+				</div>
+			<?php endif; ?>
 		
 		</form>
 	</div>
