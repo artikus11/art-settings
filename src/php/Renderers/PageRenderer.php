@@ -41,6 +41,7 @@ class PageRenderer {
 			'saved_data'     => $this->repository->get(),
 			'nonce_action'   => $this->config['nonce_action'] ?? ( 'art_settings_save_' . ( $this->config['menu']['menu_slug'] ?? '' ) ),
 			'nonce_name'     => $this->config['nonce_name'] ?? '_art_nonce',
+			'config'       => $this->config,
 			'renderer'       => $this,
 		];
 
