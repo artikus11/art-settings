@@ -2,16 +2,21 @@
 
 namespace Art\Settings\Repositories;
 
+use Art\Settings\Services\SanitizationService;
+
 class SettingsRepository {
 
 	protected string $option_key;
 
 	protected ?array $cache = null;
 
+	protected SanitizationService $sanitizer;
 
-	public function __construct( string $option_key ) {
+
+	public function __construct( string $option_key, ?SanitizationService $sanitizer = null ) {
 
 		$this->option_key = $option_key;
+		$this->sanitizer  = $sanitizer ?? new SanitizationService();
 	}
 
 
@@ -21,9 +26,10 @@ class SettingsRepository {
 			return $this->cache;
 		}
 
-		$options     = get_option( $this->option_key, [] );
+		$options = get_option( $this->option_key, [] );
+		$options = is_array( $options ) ? $options : [];
 
-		$this->cache = is_array( $options ) ? $options : [];
+		$this->cache = $this->sanitizer->prepare_for_read( $options );
 
 		return $this->cache;
 	}
@@ -31,9 +37,11 @@ class SettingsRepository {
 
 	public function update( array $data ): bool {
 
+		$clean_data  = $this->sanitizer->sanitize_for_save( $data );
+
 		$this->cache = $data;
 
-		return update_option( $this->option_key, $data );
+		return update_option( $this->option_key, $clean_data );
 	}
 
 
