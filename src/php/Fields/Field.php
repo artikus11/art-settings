@@ -81,7 +81,7 @@ abstract class Field {
 	/**
 	 * Формирует HTML-строку произвольных атрибутов (placeholder, min, max, readonly)
 	 */
-	public function get_rendered_attributes( array $exclude = [ 'rows', 'cols' ] ): string {
+	public function get_rendered_attributes( array $exclude = [ 'rows', 'cols', 'options' ] ): string {
 
 		if ( empty( $this->attributes ) ) {
 			return '';
@@ -89,7 +89,7 @@ abstract class Field {
 
 		$html = [];
 		foreach ( $this->attributes as $key => $value ) {
-			if ( in_array( $key, $exclude, true ) ) {
+			if ( in_array( $key, $exclude, true ) || is_array( $value ) ) {
 				continue;
 			}
 
