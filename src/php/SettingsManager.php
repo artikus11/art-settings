@@ -87,15 +87,22 @@ class SettingsManager {
 			wp_die( esc_html__( 'У вас недостаточно прав для изменения настроек.', 'art-settings' ) );
 		}
 
-		$new_fields = [];
 
-		// Читаем напрямую из $_POST по ID зарегистрированных полей
+		$settings = $this->repository->get();
+
 		foreach ( $this->get_registered_fields() as $field_id => $field_object ) {
-			$raw_value               = $_POST[ $field_id ] ?? null;
-			$new_fields[ $field_id ] = $field_object->sanitize( $raw_value );
+
+			$is_in_post = array_key_exists( $field_id, $_POST );
+			$is_boolean = $field_object instanceof \Art\Settings\Fields\Checkbox;
+
+			if ( $is_in_post || $is_boolean ) {
+				$raw_value            = $_POST[ $field_id ] ?? null;
+				$settings[ $field_id ] = $field_object->sanitize( $raw_value );
+			}
 		}
 
-		$this->repository->update( $new_fields );
+		// 3. Сохраняем объединенный плоский массив
+		$this->repository->update( $settings );
 
 		$redirect_url = add_query_arg(
 			[
