@@ -25,9 +25,9 @@ $info_items = apply_filters(
 			'label' => 'Тип крона',
 			'value' => ( defined( 'DISABLE_WP_CRON' ) && DISABLE_WP_CRON ) ? 'System Cron' : 'WP-Cron',
 		],
-		'version' => ! empty( $config['menu']['plugin_version'] ) ? [
+		'version' => ! empty( $config['plugin_version'] ) ? [
 			'label' => 'Версия плагина',
-			'value' => $config['menu']['plugin_version'],
+			'value' => $config['plugin_version'],
 		] : null,
 	] )
 );
