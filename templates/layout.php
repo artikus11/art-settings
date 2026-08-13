@@ -96,7 +96,7 @@ $info_items = apply_filters(
 					        value="reset"
 					        class="button button-link-delete"
 					        onclick="return confirm('Вы уверены, что хотите сбросить все настройки к значениям по умолчанию?');">
-						Сбросить настройки>
+						Сбросить настройки
 					</button>
 				</div>
 			<?php endif; ?>
