@@ -25,6 +25,7 @@
     <exclude-pattern>*/\.github/*</exclude-pattern>
     <exclude-pattern>*/examples/*</exclude-pattern>
     <exclude-pattern>*/vendor/*</exclude-pattern>
+    <exclude-pattern>*/tests/*</exclude-pattern>
 
     <!-- Exclude common files -->
     <exclude-pattern>*/\.idea/*</exclude-pattern>
