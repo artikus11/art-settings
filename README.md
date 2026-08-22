@@ -442,3 +442,33 @@ my-plugin/
 ```
 
 Все отсутствующие шаблоны автоматически подгрузятся из каталога `vendor/art/settings/templates`.
+
+---
+
+## Changelog
+
+### 1.3.0
+
+* Сохранение мержит поля с текущей опцией: данные с неактивных вкладок не затираются. Снятый чекбокс пишется как
+  `false`.
+* Сброс через `SettingsRepository::reset()`, отдельный редирект `settings-reset`.
+* `SanitizationService`: санитизация перед записью, декодирование при чтении, служебные ключи из опции вычищаются.
+* `menu.position` передаётся и в `add_submenu_page` (WP 5.3+).
+* Версия пакета больше не дублируется в `composer.json`; потребители ставят `"art/settings": "^1.0"`, цифра берётся из
+  git-тега.
+* PHPUnit-тесты.
+
+### 1.2.0
+
+* Хелперы репозитория: `get_string`, `get_int`, `get_bool` поверх `get_field_value`.
+
+### 1.1.0
+
+* Класс `ast` на `body` страницы настроек.
+* Правки вывода полей.
+
+### 1.0.0
+
+* Каркас: `SettingsManager`, табы/секции, array- и object-конфиг.
+* Поля: text, number, textarea, select, checkbox, radio, color picker.
+* Шаблоны с фолбэком, кастомный `callback` секции, webpack-ассеты.
