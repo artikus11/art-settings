@@ -34,7 +34,7 @@ $info_items = apply_filters(
 $info_items = apply_filters( "ast_info_items_$menu_slug", $info_items );
 ?>
 
-<div class="ast__wrapper">
+<div class="ast__wrapper ast__wrapper--<?php echo esc_attr( $menu_slug ); ?>">
 	<div class="ast__header">
 		<div class="ast__title-section">
 			<h1 class="ast__title"><?php echo esc_html( $page_title ); ?></h1>
