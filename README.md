@@ -25,11 +25,13 @@
     }
   ],
   "require": {
-    "art/settings": "dev-master"
+    "art/settings": "^1.0"
   }
 }
 
 ```
+
+Версия пакета берётся из git-тега, не из поля `"version"` в `composer.json`. Constraint `^1.0` пускает 1.x, мажор режет.
 
 Затем выполните установку:
 
@@ -59,7 +61,8 @@ add_action( 'plugins_loaded', function() {
             'menu_title'  => 'Мой Плагин',
             'menu_slug'   => 'my-plugin-settings',
             'capability'  => 'manage_options',
-            'parent_slug' => 'options-general.php', // Добавит в "Настройки"
+            'parent_slug' => 'options-general.php', // подменю в «Настройки»; без ключа — пункт верхнего уровня
+            'position'    => 80, // опционально; для подменю — 7-й аргумент add_submenu_page (WP 5.3+)
         ],
         'tabs' => [
             'general' => [
