@@ -53,7 +53,8 @@ class SettingsManager {
 				$menu['menu_title'] ?? 'Настройки',
 				$menu['capability'] ?? 'manage_options',
 				$menu['menu_slug'],
-				fn() => $this->renderer->render( $normalized_tabs )
+				fn() => $this->renderer->render( $normalized_tabs ),
+				$menu['position'] ?? null
 			);
 		} else {
 			add_menu_page(
