@@ -29,6 +29,11 @@
   `$menu['position']` (как у `add_menu_page`). Без ключа передаётся `null` — поведение WP по умолчанию.
 * [x] **Стратегия версий `^1.0`:** Поле `"version"` убрано из `composer.json`. Версия пакета для Composer берётся из
   git-тега, потребители ставят `"art/settings": "^1.0"`.
+* [x] **Скоуп хуков шапки по странице:** Рядом с глобальными `ast_info_items` / `ast_before_info_items` /
+  `ast_after_info_items` вызываются `ast_info_items_{$menu_slug}` и те же суффиксы для before/after. Плагин вешается на
+  свой `menu_slug` и не фильтрует чужие страницы вручную. Глобальные хуки оставлены для совместимости.
+* [x] **Одна вкладка без `<nav>`:** `templates/tabs.php` не рендерит навигацию при `count( $tabs ) < 2`. CSS-скрытие
+  пустого враппера больше не нужно.
 
 ---
 
@@ -70,6 +75,16 @@ $this->repository->update( $settings );
 Захардкоженная `"version": "1.3.0"` в `composer.json` ломает SemVer для VCS-установки: Composer игнорирует теги и отдаёт
 одну цифру. Источник правды — git-тег. Constraint `^1.0` пускает патчи и миноры 1.x, мажор режет.
 
+### Хуки шапки (`layout.php`)
+
+Порядок: сначала общий фильтр/экшен, затем вариант с `menu_slug`. Потребитель без проверки `page` подписывается на
+`ast_info_items_{$menu_slug}` (и `ast_before_info_items_{$menu_slug}` / `ast_after_info_items_{$menu_slug}`).
+
+### Табы (`tabs.php`)
+
+`<nav class="ast__tabs-wrapper">` выводится только если вкладок две и больше. Класс `ast__tabs-wrapper--empty` и правило
+в SCSS не добавлялись: пустой nav в DOM не нужен.
+
 ---
 
 ## 4. Изменённые файлы
@@ -77,6 +92,9 @@ $this->repository->update( $settings );
 * `src/php/SettingsManager.php` — седьмой аргумент `add_submenu_page()`: `$menu['position'] ?? null`.
 * `composer.json` — удалено поле `"version"`.
 * `composer.lock` — пересчитан `content-hash`, подтянулись dev-зависимости после `composer update`.
+* `templates/layout.php` — второй `apply_filters( "ast_info_items_{$menu_slug}" )`; `do_action` before/after с тем же
+  суффиксом.
+* `templates/tabs.php` — early return, если вкладок меньше двух.
 
 ---
 
@@ -87,6 +105,9 @@ $this->repository->update( $settings );
 * **Сброс:** Кнопка «Сбросить настройки» очищает опцию в БД до пустого массива `[]`.
 * **Подменю:** `position` из конфига `menu` доходит до `add_submenu_page()`.
 * **Composer:** в `composer.json` нет `"version"`; установка по `^1.0` заработает только после появления git-тега `1.x`.
+* **Хуки шапки:** фильтр `ast_info_items_{menu_slug}` меняет блок только на своей странице; глобальный `ast_info_items`
+  по-прежнему виден всем потребителям библиотеки.
+* **Одна вкладка:** `<nav>` в разметке нет, отдельный CSS не требуется.
 
 ---
 

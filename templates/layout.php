@@ -31,6 +31,7 @@ $info_items = apply_filters(
 		] : null,
 	] )
 );
+$info_items = apply_filters( "ast_info_items_$menu_slug", $info_items );
 ?>
 
 <div class="ast__wrapper">
@@ -40,7 +41,7 @@ $info_items = apply_filters(
 		</div>
 		
 		<div class="ast__title-section--info">
-			<?php do_action( 'ast_before_info_items' ); ?>
+			<?php do_action( "ast_before_info_items_$menu_slug" ); ?>
 			
 			<?php foreach ( $info_items as $item ) : ?>
 				<div class="info-item">
@@ -48,7 +49,7 @@ $info_items = apply_filters(
 				</div>
 			<?php endforeach; ?>
 			
-			<?php do_action( 'ast_after_info_items' ); ?>
+			<?php do_action( "ast_after_info_items_$menu_slug" ); ?>
 		</div>
 		
 		<?php $renderer->render_tabs( $tabs, $active_tab, $menu_slug ); ?>

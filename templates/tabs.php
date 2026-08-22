@@ -12,6 +12,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+if ( count( $tabs ) < 2 ) {
+	return;
+}
+
 $wrapper_classes = apply_filters(
 	'ast_tabs_wrapper_classes',
 	[
