@@ -25,6 +25,31 @@ class TestableSettingsManager extends SettingsManager {
 	}
 
 
-	protected function redirect( string $menu_slug, string $current_tab, string $status_flag ): void {
+protected function redirect( string $menu_slug, string $current_tab, string $status_flag ): void {
 	}
+
+
+	public function run_move_submenu_last( string $parent_slug, string $menu_slug ): void {
+
+		$this->move_submenu_last( $parent_slug, $menu_slug );
+	}
+
+
+	public function run_move_submenu_first( string $parent_slug, string $menu_slug ): void {
+
+		$this->move_submenu_first( $parent_slug, $menu_slug );
+	}
+
+
+	public function run_move_submenu_at( string $parent_slug, string $menu_slug, int $index ): void {
+
+		$this->move_submenu_at( $parent_slug, $menu_slug, $index );
+	}
+
+
+	public function run_reorder_submenu( array $menu ): void {
+
+		$this->reorder_submenu( $menu );
+	}
+
 }

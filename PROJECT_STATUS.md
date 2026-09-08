@@ -16,6 +16,21 @@
 
 ## 2. Завершённые задачи (Текущий этап)
 
+### 1.4.0 — перемещение подменю через `menu.position`
+
+* [x] **Гарантированная позиция подменю после всех регистраций:** `SettingsManager::register_menu()` после
+  `add_submenu_page()`/`add_menu_page()` вызывает `reorder_submenu( $menu )`, который перекладывает пункт в
+  `$submenu` на `admin_menu`. Раньше порядок фиксировался в момент регистрации, и подменю, добавленные другими
+  плагинами позже (например, Skl Promotion), оказывались ниже «Версий плагинов».
+* [x] **Соглашение `menu.position`:** `'first'` — в начало; `'last'` — в конец; `int >= 0` — на конкретный индекс;
+  `null`/без ключа — без изменений. Передаётся в `add_submenu_page`/`add_menu_page` и в `reorder_submenu`.
+* [x] **Внутренние помощники:** `move_submenu_last/first/at` и `extract_submenu_item` — защищённые, работают с
+  `global $submenu`; отсутствующий пункт оставляет массив нетронутым.
+* [x] **PHPUnit:** 7 новых тестов перекладки (конец/начало/индекс, отсутствующий пункт, нулевая позиция, noop) —
+  22 теста / 45 ассертов, зелёные.
+* [x] **phpcs:** отключен `WordPress.WP.GlobalVariablesOverride` (легитимная работа с `$submenu`); новых ошибок
+  относительно базлайна нет.
+
 * [x] **Изоляция сохранения данных:** Переписана логика `SettingsManager::handle_actions` с разделением на 
   `process_update`
   и `process_reset`. Сохранение теперь работает по принципу объединения (`array_merge`) текущих настроек из БД и
@@ -70,6 +85,10 @@ $this->repository->update( $settings );
 При непустом `parent_slug` вызывается `add_submenu_page()`. С WP 5.3 у неё есть `$position`; раньше конфиг `menu.position`
 работал только у верхней страницы. Приоритет хука `admin_menu` по-прежнему 10, отдельного ключа в конфиге нет.
 
+С 1.4.0 `menu.position` также сортирует пункт в `$submenu` в конце `register_menu()`: `'first'` / `'last'` / `int`.
+Это делает позицию устойчивой к подменю, добавленным другими плагинами позже в тот же хук. Внутренние
+`move_submenu_*` менять не нужно — они перекладывают пункт по слагу внутри $submenu родителя.
+
 ### Версии
 
 Захардкоженная `"version": "1.3.0"` в `composer.json` ломает SemVer для VCS-установки: Composer игнорирует теги и отдаёт
@@ -89,7 +108,11 @@ $this->repository->update( $settings );
 
 ## 4. Изменённые файлы
 
-* `src/php/SettingsManager.php` — седьмой аргумент `add_submenu_page()`: `$menu['position'] ?? null`.
+* `src/php/SettingsManager.php` — седьмой аргумент `add_submenu_page()`: `$menu['position'] ?? null`; новый
+  `reorder_submenu()` и помощники `move_submenu_*`/`extract_submenu_item`.
+* `tests/Unit/SettingsManagerTest.php` — 7 тестов перекладки подменю.
+* `tests/Support/TestableSettingsManager.php` — раннеры `run_move_submenu_*` и `run_reorder_submenu`.
+* `phpcs.xml` — отключен `WordPress.WP.GlobalVariablesOverride`.
 * `composer.json` — удалено поле `"version"`.
 * `composer.lock` — пересчитан `content-hash`, подтянулись dev-зависимости после `composer update`.
 * `templates/layout.php` — второй `apply_filters( "ast_info_items_{$menu_slug}" )`; `do_action` before/after с тем же
@@ -103,7 +126,8 @@ $this->repository->update( $settings );
 * **Переключение вкладок:** При сохранении формы на Табе А данные с Таба Б не стираются из базы данных.
 * **Снятие чекбоксов:** Отключение чекбокса корректно записывает `false` в соответствующий ключ массива настроек.
 * **Сброс:** Кнопка «Сбросить настройки» очищает опцию в БД до пустого массива `[]`.
-* **Подменю:** `position` из конфига `menu` доходит до `add_submenu_page()`.
+* **Подменю:** `position` из конфига `menu` доходит до `add_submenu_page()` и (с 1.4.0) сортирует пункт в `$submenu`
+  — пункт стабильно последний/первый/на заданном индексе после всех регистраций.
 * **Composer:** в `composer.json` нет `"version"`; установка по `^1.0` заработает только после появления git-тега `1.x`.
 * **Хуки шапки:** фильтр `ast_info_items_{menu_slug}` меняет блок только на своей странице; глобальный `ast_info_items`
   по-прежнему виден всем потребителям библиотеки.

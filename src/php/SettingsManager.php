@@ -67,6 +67,127 @@ class SettingsManager {
 				$menu['position'] ?? null
 			);
 		}
+
+		$this->reorder_submenu( $menu );
+	}
+
+
+	/**
+	 * Гарантированная позиция подменю после всех регистраций на admin_menu.
+	 *
+	 * Перекладывает пункт по $menu['position'] в конце хука. Конвенция:
+	 * - 'first'  — в начало;
+	 * - 'last'   — в конец (переживает подменю, добавленные позже);
+	 * - int ≥ 0  — на конкретный индекс (array_splice);
+	 * - null/отсутствует — без изменений.
+	 */
+	protected function reorder_submenu( array $menu ): void {
+
+		if ( empty( $menu['parent_slug'] ) || ! isset( $menu['position'] ) ) {
+			return;
+		}
+
+		$slug     = $menu['menu_slug'];
+		$position = $menu['position'];
+
+		if ( 'first' === $position ) {
+			$this->move_submenu_first( $menu['parent_slug'], $slug );
+
+			return;
+		}
+
+		if ( 'last' === $position ) {
+			$this->move_submenu_last( $menu['parent_slug'], $slug );
+
+			return;
+		}
+
+		if ( is_int( $position ) ) {
+			$this->move_submenu_at( $menu['parent_slug'], $slug, $position );
+		}
+	}
+
+
+	/**
+	 * Перемещает пункт подменю в конец массива $submenu.
+	 */
+	protected function move_submenu_last( string $parent_slug, string $menu_slug ): void {
+
+		global $submenu;
+
+		$item = $this->extract_submenu_item( $parent_slug, $menu_slug );
+
+		if ( null === $item ) {
+			return;
+		}
+
+		$submenu[ $parent_slug ][] = $item;
+	}
+
+
+	/**
+	 * Перемещает пункт подменю в начало массива $submenu.
+	 */
+	protected function move_submenu_first( string $parent_slug, string $menu_slug ): void {
+
+		global $submenu;
+
+		$item = $this->extract_submenu_item( $parent_slug, $menu_slug );
+
+		if ( null === $item ) {
+			return;
+		}
+
+		array_unshift( $submenu[ $parent_slug ], $item );
+	}
+
+
+	/**
+	 * Перемещает пункт подменю на конкретный индекс $submenu.
+	 */
+	protected function move_submenu_at( string $parent_slug, string $menu_slug, int $index ): void {
+
+		global $submenu;
+
+		$item = $this->extract_submenu_item( $parent_slug, $menu_slug );
+
+		if ( null === $item ) {
+			return;
+		}
+
+		$index       = max( 0, min( $index, count( $submenu[ $parent_slug ] ) ) );
+		$submenu[ $parent_slug ] = array_merge(
+			array_slice( $submenu[ $parent_slug ], 0, $index ),
+			[ $item ],
+			array_slice( $submenu[ $parent_slug ], $index )
+		);
+	}
+
+
+	/**
+	 * Ищет пункт подменю по slug и вынимает его из массива $submenu.
+	 *
+	 * @return array{0?:string,1?:string,2?:string}|null
+	 */
+	protected function extract_submenu_item( string $parent_slug, string $menu_slug ): ?array {
+
+		global $submenu;
+
+		if ( empty( $submenu[ $parent_slug ] ) || ! is_array( $submenu[ $parent_slug ] ) ) {
+			return null;
+		}
+
+		foreach ( $submenu[ $parent_slug ] as $key => $item ) {
+			if ( ! is_array( $item ) || ( $item[2] ?? '' ) !== $menu_slug ) {
+				continue;
+			}
+
+			unset( $submenu[ $parent_slug ][ $key ] );
+
+			return $item;
+		}
+
+		return null;
 	}
 
 

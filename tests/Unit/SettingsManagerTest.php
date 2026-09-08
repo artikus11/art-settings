@@ -114,6 +114,171 @@ class SettingsManagerTest extends TestCase {
 	}
 
 
+	public function test_move_submenu_last_puts_item_at_the_end(): void {
+
+		global $submenu;
+
+		$manager = $this->create_manager( new InMemorySettingsRepository( [] ) );
+
+		$submenu = [
+			'parent' => [
+				0 => [ 'Title', 'manage_options', 'first' ],
+				1 => [ 'Title', 'manage_options', 'target' ],
+				2 => [ 'Title', 'manage_options', 'third' ],
+			],
+		];
+
+		$manager->run_move_submenu_last( 'parent', 'target' );
+
+		$this->assertSame( [ 'first', 'third', 'target' ], array_column( $submenu['parent'], 2 ) );
+	}
+
+
+	public function test_move_submenu_last_with_missing_item_leaves_submenu_untouched(): void {
+
+		global $submenu;
+
+		$manager = $this->create_manager( new InMemorySettingsRepository( [] ) );
+
+		$submenu = [
+			'parent' => [
+				0 => [ 'Title', 'manage_options', 'other' ],
+			],
+		];
+
+		$manager->run_move_submenu_last( 'parent', 'missing' );
+
+		$this->assertSame( [ 'other' ], array_column( $submenu['parent'], 2 ) );
+	}
+
+
+	public function test_move_submenu_first_puts_item_at_the_beginning(): void {
+
+		global $submenu;
+
+		$manager = $this->create_manager( new InMemorySettingsRepository( [] ) );
+
+		$submenu = [
+			'parent' => [
+				0 => [ 'Title', 'manage_options', 'first' ],
+				1 => [ 'Title', 'manage_options', 'target' ],
+				2 => [ 'Title', 'manage_options', 'third' ],
+			],
+		];
+
+		$manager->run_move_submenu_first( 'parent', 'target' );
+
+		$this->assertSame( [ 'target', 'first', 'third' ], array_column( $submenu['parent'], 2 ) );
+	}
+
+
+	public function test_move_submenu_at_inserts_at_requested_index(): void {
+
+		global $submenu;
+
+		$manager = $this->create_manager( new InMemorySettingsRepository( [] ) );
+
+		$submenu = [
+			'parent' => [
+				0 => [ 'Title', 'manage_options', 'zero' ],
+				1 => [ 'Title', 'manage_options', 'one' ],
+				2 => [ 'Title', 'manage_options', 'target' ],
+				3 => [ 'Title', 'manage_options', 'three' ],
+			],
+		];
+
+		$manager->run_move_submenu_at( 'parent', 'target', 1 );
+
+		$this->assertSame( [ 'zero', 'target', 'one', 'three' ], array_column( $submenu['parent'], 2 ) );
+	}
+
+
+	public function test_reorder_submenu_last_and_first_and_int(): void {
+
+		global $submenu;
+
+		$manager = $this->create_manager( new InMemorySettingsRepository( [] ) );
+
+		$submenu = [
+			'parent' => [
+				0 => [ 'Title', 'manage_options', 'alpha' ],
+				1 => [ 'Title', 'manage_options', 'beta' ],
+				2 => [ 'Title', 'manage_options', 'gamma' ],
+			],
+		];
+
+		$manager->run_reorder_submenu( [
+			'parent_slug' => 'parent',
+			'menu_slug'   => 'beta',
+			'position'    => 'last',
+		] );
+		$this->assertSame( [ 'alpha', 'gamma', 'beta' ], array_column( $submenu['parent'], 2 ) );
+
+		$manager->run_reorder_submenu( [
+			'parent_slug' => 'parent',
+			'menu_slug'   => 'beta',
+			'position'    => 'first',
+		] );
+		$this->assertSame( [ 'beta', 'alpha', 'gamma' ], array_column( $submenu['parent'], 2 ) );
+
+		$manager->run_reorder_submenu( [
+			'parent_slug' => 'parent',
+			'menu_slug'   => 'beta',
+			'position'    => 1,
+		] );
+		$this->assertSame( [ 'alpha', 'beta', 'gamma' ], array_column( $submenu['parent'], 2 ) );
+	}
+
+
+	public function test_reorder_submenu_ignores_null_or_missing_position(): void {
+
+		global $submenu;
+
+		$manager = $this->create_manager( new InMemorySettingsRepository( [] ) );
+
+		$submenu = [
+			'parent' => [
+				0 => [ 'Title', 'manage_options', 'alpha' ],
+				1 => [ 'Title', 'manage_options', 'beta' ],
+			],
+		];
+
+		$manager->run_reorder_submenu( [
+			'parent_slug' => 'parent',
+			'menu_slug'   => 'beta',
+		] );
+		$this->assertSame( [ 'alpha', 'beta' ], array_column( $submenu['parent'], 2 ) );
+
+		$manager->run_reorder_submenu( [
+			'parent_slug' => 'parent',
+			'menu_slug'   => 'beta',
+			'position'    => null,
+		] );
+		$this->assertSame( [ 'alpha', 'beta' ], array_column( $submenu['parent'], 2 ) );
+	}
+
+
+	public function test_reorder_submenu_without_parent_slug_is_noop(): void {
+
+		global $submenu;
+
+		$manager = $this->create_manager( new InMemorySettingsRepository( [] ) );
+
+		$submenu = [
+			'parent' => [
+				0 => [ 'Title', 'manage_options', 'alpha' ],
+				1 => [ 'Title', 'manage_options', 'beta' ],
+			],
+		];
+
+		$manager->run_reorder_submenu( [
+			'menu_slug' => 'beta',
+			'position'  => 'last',
+		] );
+		$this->assertSame( [ 'alpha', 'beta' ], array_column( $submenu['parent'], 2 ) );
+	}
+
+
 	private function create_manager( InMemorySettingsRepository $repository ): TestableSettingsManager {
 
 		$manager = new TestableSettingsManager( [
