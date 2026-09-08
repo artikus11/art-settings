@@ -30,6 +30,10 @@ class SettingsManager {
 		}
 
 		add_action( 'admin_menu', [ $this, 'register_menu' ] );
+		add_action( 'admin_menu', function (): void {
+
+			$this->apply_position( $this->config['menu'] ?? [] );
+		}, PHP_INT_MAX );
 		add_filter( 'admin_body_class', [ $this, 'admin_body_class' ] );
 		add_action( 'admin_init', [ $this, 'handle_action' ] );
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_assets' ] );
@@ -44,6 +48,8 @@ class SettingsManager {
 			return;
 		}
 
+		$position = $this->get_registration_position( $menu['position'] ?? null );
+
 		$normalized_tabs = $this->get_normalized_tabs();
 
 		if ( ! empty( $menu['parent_slug'] ) ) {
@@ -54,7 +60,7 @@ class SettingsManager {
 				$menu['capability'] ?? 'manage_options',
 				$menu['menu_slug'],
 				fn() => $this->renderer->render( $normalized_tabs ),
-				$menu['position'] ?? null
+				$position
 			);
 		} else {
 			add_menu_page(
@@ -64,24 +70,33 @@ class SettingsManager {
 				$menu['menu_slug'],
 				fn() => $this->renderer->render( $normalized_tabs ),
 				$menu['icon'] ?? 'dashicons-admin-generic',
-				$menu['position'] ?? null
+				$position
 			);
 		}
+	}
 
-		$this->reorder_submenu( $menu );
+
+	/**
+	 * Нормализует position из конфига для передачи в add_submenu_page/add_menu_page.
+	 *
+	 * WP требует числа; строки ('first'/'last') в UUID не годятся и вызывают _doing_it_wrong.
+	 */
+	protected function get_registration_position( mixed $position ): int|float|null {
+
+		return is_numeric( $position ) ? $position : null;
 	}
 
 
 	/**
 	 * Гарантированная позиция подменю после всех регистраций на admin_menu.
 	 *
-	 * Перекладывает пункт по $menu['position'] в конце хука. Конвенция:
+	 * Вызывается на хуке admin_menu с приоритетом PHP_INT_MAX. Конвенция:
 	 * - 'first'  — в начало;
 	 * - 'last'   — в конец (переживает подменю, добавленные позже);
 	 * - int ≥ 0  — на конкретный индекс (array_splice);
 	 * - null/отсутствует — без изменений.
 	 */
-	protected function reorder_submenu( array $menu ): void {
+	protected function apply_position( array $menu ): void {
 
 		if ( empty( $menu['parent_slug'] ) || ! isset( $menu['position'] ) ) {
 			return;
@@ -92,17 +107,9 @@ class SettingsManager {
 
 		if ( 'first' === $position ) {
 			$this->move_submenu_first( $menu['parent_slug'], $slug );
-
-			return;
-		}
-
-		if ( 'last' === $position ) {
+		} elseif ( 'last' === $position ) {
 			$this->move_submenu_last( $menu['parent_slug'], $slug );
-
-			return;
-		}
-
-		if ( is_int( $position ) ) {
+		} elseif ( is_int( $position ) ) {
 			$this->move_submenu_at( $menu['parent_slug'], $slug, $position );
 		}
 	}

@@ -47,9 +47,15 @@ protected function redirect( string $menu_slug, string $current_tab, string $sta
 	}
 
 
-	public function run_reorder_submenu( array $menu ): void {
+	public function run_apply_position( array $menu ): void {
 
-		$this->reorder_submenu( $menu );
+		$this->apply_position( $menu );
+	}
+
+
+	public function run_get_registration_position( mixed $position ): int|float|null {
+
+		return $this->get_registration_position( $position );
 	}
 
 }

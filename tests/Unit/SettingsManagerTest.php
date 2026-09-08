@@ -193,7 +193,7 @@ class SettingsManagerTest extends TestCase {
 	}
 
 
-	public function test_reorder_submenu_last_and_first_and_int(): void {
+	public function test_apply_position_last_first_and_int(): void {
 
 		global $submenu;
 
@@ -207,21 +207,21 @@ class SettingsManagerTest extends TestCase {
 			],
 		];
 
-		$manager->run_reorder_submenu( [
+		$manager->run_apply_position( [
 			'parent_slug' => 'parent',
 			'menu_slug'   => 'beta',
 			'position'    => 'last',
 		] );
 		$this->assertSame( [ 'alpha', 'gamma', 'beta' ], array_column( $submenu['parent'], 2 ) );
 
-		$manager->run_reorder_submenu( [
+		$manager->run_apply_position( [
 			'parent_slug' => 'parent',
 			'menu_slug'   => 'beta',
 			'position'    => 'first',
 		] );
 		$this->assertSame( [ 'beta', 'alpha', 'gamma' ], array_column( $submenu['parent'], 2 ) );
 
-		$manager->run_reorder_submenu( [
+		$manager->run_apply_position( [
 			'parent_slug' => 'parent',
 			'menu_slug'   => 'beta',
 			'position'    => 1,
@@ -230,7 +230,7 @@ class SettingsManagerTest extends TestCase {
 	}
 
 
-	public function test_reorder_submenu_ignores_null_or_missing_position(): void {
+	public function test_apply_position_ignores_null_or_missing_position(): void {
 
 		global $submenu;
 
@@ -243,13 +243,13 @@ class SettingsManagerTest extends TestCase {
 			],
 		];
 
-		$manager->run_reorder_submenu( [
+		$manager->run_apply_position( [
 			'parent_slug' => 'parent',
 			'menu_slug'   => 'beta',
 		] );
 		$this->assertSame( [ 'alpha', 'beta' ], array_column( $submenu['parent'], 2 ) );
 
-		$manager->run_reorder_submenu( [
+		$manager->run_apply_position( [
 			'parent_slug' => 'parent',
 			'menu_slug'   => 'beta',
 			'position'    => null,
@@ -258,7 +258,7 @@ class SettingsManagerTest extends TestCase {
 	}
 
 
-	public function test_reorder_submenu_without_parent_slug_is_noop(): void {
+	public function test_apply_position_without_parent_slug_is_noop(): void {
 
 		global $submenu;
 
@@ -271,11 +271,30 @@ class SettingsManagerTest extends TestCase {
 			],
 		];
 
-		$manager->run_reorder_submenu( [
+		$manager->run_apply_position( [
 			'menu_slug' => 'beta',
 			'position'  => 'last',
 		] );
 		$this->assertSame( [ 'alpha', 'beta' ], array_column( $submenu['parent'], 2 ) );
+	}
+
+
+	public function test_get_registration_position_returns_null_for_non_numeric(): void {
+
+		$manager = $this->create_manager( new InMemorySettingsRepository( [] ) );
+
+		$this->assertNull( $manager->run_get_registration_position( 'last' ) );
+		$this->assertNull( $manager->run_get_registration_position( 'first' ) );
+		$this->assertNull( $manager->run_get_registration_position( null ) );
+	}
+
+
+	public function test_get_registration_position_returns_number_for_numeric(): void {
+
+		$manager = $this->create_manager( new InMemorySettingsRepository( [] ) );
+
+		$this->assertSame( 80, $manager->run_get_registration_position( 80 ) );
+		$this->assertSame( 80, $manager->run_get_registration_position( '80' ) );
 	}
 
 
