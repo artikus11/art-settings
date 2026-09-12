@@ -47,6 +47,26 @@
     &#{$this}__tab-count-5 {
       grid-template-columns: repeat(5, 1fr);
     }
+
+    &#{$this}__tab-count-6 {
+      grid-template-columns: repeat(6, 1fr);
+    }
+
+    &#{$this}__tab-count-7 {
+      grid-template-columns: repeat(7, 1fr);
+    }
+
+    &#{$this}__tab-count-8 {
+      grid-template-columns: repeat(8, 1fr);
+    }
+
+    &#{$this}__tab-count-9 {
+      grid-template-columns: repeat(9, 1fr);
+    }
+
+    &#{$this}__tab-count-9 {
+      grid-template-columns: repeat(10, 1fr);
+    }
   }
 
   &__tab {
