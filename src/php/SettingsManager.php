@@ -292,18 +292,18 @@ class SettingsManager {
 			return;
 		}
 
-		$base_dir = dirname( __DIR__, 2 );
-		$base_url = content_url( str_replace( wp_normalize_path( WP_CONTENT_DIR ), '', wp_normalize_path( $base_dir ) ) ) . '/assets/';
+		$base_dir = $this->get_library_root();
+		$base_url = $this->get_assets_base_url( $base_dir );
 
 		$assets = [
 			'style'  => [
-				'handle'    => 'ast-admin-style',
+				'handle'    => $this->get_asset_handle( 'ast-admin-style' ),
 				'rel_path'  => 'css/ast-admin-style.min.css',
 				'deps'      => [],
 				'in_footer' => false,
 			],
 			'script' => [
-				'handle'    => 'ast-admin-script',
+				'handle'    => $this->get_asset_handle( 'ast-admin-script' ),
 				'rel_path'  => 'js/ast-admin-script.min.js',
 				'deps'      => [ 'jquery' ],
 				'in_footer' => true,
@@ -321,6 +321,111 @@ class SettingsManager {
 				wp_enqueue_script( $asset['handle'], $file_url, $asset['deps'], $version, $asset['in_footer'] );
 			}
 		}
+	}
+
+
+	/**
+	 * Корень art/settings у плагина-потребителя, а не у первого загруженного classmap.
+	 *
+	 * PHP подключает класс один раз. __DIR__ тогда указывает на vendor другого плагина
+	 * (например skl-promotion), даже если страница настроек у skl-dedup-scan.
+	 */
+	protected function get_library_root(): string {
+
+		$configured = $this->config['assets_dir'] ?? '';
+
+		if ( is_string( $configured ) && '' !== $configured ) {
+			return $this->normalize_dir( $configured );
+		}
+
+		foreach ( $this->get_library_root_candidates() as $candidate ) {
+			if ( is_dir( $candidate . '/assets' ) ) {
+				return $candidate;
+			}
+		}
+
+		return $this->normalize_dir( dirname( __DIR__, 2 ) );
+	}
+
+
+	/**
+	 * @return list<string>
+	 */
+	protected function get_library_root_candidates(): array {
+
+		$candidates = [];
+
+		$plugin_file = $this->config['plugin_file'] ?? '';
+		if ( is_string( $plugin_file ) && '' !== $plugin_file ) {
+			$candidates[] = $this->normalize_dir( dirname( $plugin_file ) . '/vendor/art/settings' );
+		}
+
+		$plugin_dir = $this->config['plugin_dir'] ?? '';
+		if ( is_string( $plugin_dir ) && '' !== $plugin_dir ) {
+			$candidates[] = $this->normalize_dir( rtrim( $plugin_dir, '/\\' ) . '/vendor/art/settings' );
+		}
+
+		$template_path = $this->config['template_path'] ?? '';
+		if ( ! is_string( $template_path ) || '' === $template_path ) {
+			return array_values( array_unique( $candidates ) );
+		}
+
+		$dir = $this->normalize_dir( $template_path );
+		for ( $i = 0; $i < 6; $i++ ) {
+			$candidates[] = $this->normalize_dir( $dir . '/vendor/art/settings' );
+			$parent       = dirname( $dir );
+			if ( $parent === $dir ) {
+				break;
+			}
+			$dir = $parent;
+		}
+
+		return array_values( array_unique( $candidates ) );
+	}
+
+
+	protected function get_assets_base_url( string $library_root ): string {
+
+		$configured = $this->config['assets_url'] ?? '';
+		if ( is_string( $configured ) && '' !== $configured ) {
+			return rtrim( $configured, '/' ) . '/';
+		}
+
+		$normalized_root = $this->normalize_dir( $library_root );
+		$content_dir     = $this->normalize_dir( (string) WP_CONTENT_DIR );
+
+		if ( str_starts_with( $normalized_root, $content_dir ) ) {
+			$relative = substr( $normalized_root, strlen( $content_dir ) );
+
+			return content_url( $relative ) . '/assets/';
+		}
+
+		return content_url( str_replace( $content_dir, '', $normalized_root ) ) . '/assets/';
+	}
+
+
+	protected function get_asset_handle( string $base_handle ): string {
+
+		$slug = (string) ( $this->config['menu']['menu_slug'] ?? $this->config['option_key'] ?? '' );
+		$slug = strtolower( (string) preg_replace( '/[^a-z0-9_\-]/i', '', $slug ) );
+
+		if ( '' === $slug ) {
+			return $base_handle;
+		}
+
+		return $base_handle . '-' . $slug;
+	}
+
+
+	protected function normalize_dir( string $path ): string {
+
+		$path = str_replace( '\\', '/', $path );
+
+		if ( function_exists( 'wp_normalize_path' ) ) {
+			$path = wp_normalize_path( $path );
+		}
+
+		return rtrim( $path, '/' );
 	}
 
 

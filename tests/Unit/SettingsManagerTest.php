@@ -298,6 +298,50 @@ class SettingsManagerTest extends TestCase {
 	}
 
 
+	public function test_get_library_root_uses_plugin_vendor_from_template_path(): void {
+
+		$plugin_root  = sys_get_temp_dir() . '/art-settings-plugin-' . uniqid( '', false );
+		$library_root = $plugin_root . '/vendor/art/settings';
+		$assets_dir   = $library_root . '/assets';
+
+		$this->assertTrue( mkdir( $assets_dir, 0777, true ) );
+
+		$manager = new TestableSettingsManager( [
+			'option_key'    => 'sklds_options',
+			'menu'          => [ 'menu_slug' => 'sklds-settings' ],
+			'template_path' => $plugin_root . '/templates/settings',
+			'tabs'          => [],
+		] );
+
+		try {
+			$this->assertSame(
+				str_replace( '\\', '/', $library_root ),
+				$manager->run_get_library_root()
+			);
+			$this->assertSame( 'ast-admin-style-sklds-settings', $manager->run_get_asset_handle( 'ast-admin-style' ) );
+		} finally {
+			@rmdir( $assets_dir );
+			@rmdir( $library_root );
+			@rmdir( dirname( $library_root ) );
+			@rmdir( dirname( $library_root, 2 ) );
+			@rmdir( $plugin_root );
+		}
+	}
+
+
+	public function test_get_library_root_prefers_assets_dir_config(): void {
+
+		$manager = new TestableSettingsManager( [
+			'option_key' => 'sklds_options',
+			'menu'       => [ 'menu_slug' => 'sklds-settings' ],
+			'assets_dir' => '/tmp/custom-art-settings',
+			'tabs'       => [],
+		] );
+
+		$this->assertSame( '/tmp/custom-art-settings', $manager->run_get_library_root() );
+	}
+
+
 	private function create_manager( InMemorySettingsRepository $repository ): TestableSettingsManager {
 
 		$manager = new TestableSettingsManager( [

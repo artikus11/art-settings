@@ -58,4 +58,16 @@ protected function redirect( string $menu_slug, string $current_tab, string $sta
 		return $this->get_registration_position( $position );
 	}
 
+
+	public function run_get_library_root(): string {
+
+		return $this->get_library_root();
+	}
+
+
+	public function run_get_asset_handle( string $base_handle ): string {
+
+		return $this->get_asset_handle( $base_handle );
+	}
+
 }
