@@ -319,6 +319,9 @@ class SettingsManagerTest extends TestCase {
 				$manager->run_get_library_root()
 			);
 			$this->assertSame( 'ast-admin-style-sklds-settings', $manager->run_get_asset_handle( 'ast-admin-style' ) );
+			$this->assertTrue( $manager->run_is_settings_hook( 'toplevel_page_sklds-settings' ) );
+			$this->assertTrue( $manager->run_is_settings_hook( 'skl-core-settings_page_sklds-settings' ) );
+			$this->assertFalse( $manager->run_is_settings_hook( 'toplevel_page_skl-promotion-settings' ) );
 		} finally {
 			@rmdir( $assets_dir );
 			@rmdir( $library_root );

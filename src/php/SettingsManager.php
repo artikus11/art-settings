@@ -287,8 +287,7 @@ class SettingsManager {
 
 	public function enqueue_assets( string $hook_suffix ): void {
 
-		$menu_slug = $this->config['menu']['menu_slug'] ?? '';
-		if ( empty( $menu_slug ) || ! str_contains( $hook_suffix, $menu_slug ) ) {
+		if ( ! $this->is_settings_hook( $hook_suffix ) ) {
 			return;
 		}
 
@@ -330,6 +329,18 @@ class SettingsManager {
 	 * PHP подключает класс один раз. __DIR__ тогда указывает на vendor другого плагина
 	 * (например skl-promotion), даже если страница настроек у skl-dedup-scan.
 	 */
+	protected function is_settings_hook( string $hook_suffix ): bool {
+
+		$menu_slug = $this->config['menu']['menu_slug'] ?? '';
+
+		if ( ! is_string( $menu_slug ) || '' === $menu_slug ) {
+			return false;
+		}
+
+		return str_ends_with( $hook_suffix, '_page_' . $menu_slug );
+	}
+
+
 	protected function get_library_root(): string {
 
 		$configured = $this->config['assets_dir'] ?? '';

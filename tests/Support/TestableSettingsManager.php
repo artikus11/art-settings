@@ -70,4 +70,10 @@ protected function redirect( string $menu_slug, string $current_tab, string $sta
 		return $this->get_asset_handle( $base_handle );
 	}
 
+
+	public function run_is_settings_hook( string $hook_suffix ): bool {
+
+		return $this->is_settings_hook( $hook_suffix );
+	}
+
 }
