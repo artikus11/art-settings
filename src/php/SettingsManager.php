@@ -37,6 +37,18 @@ class SettingsManager {
 		add_filter( 'admin_body_class', [ $this, 'admin_body_class' ] );
 		add_action( 'admin_init', [ $this, 'handle_action' ] );
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_assets' ] );
+
+		if ( true === ( $this->config['htmx'] ?? false ) ) {
+			$handler = new \Art\Settings\Services\HtmxHandler( $this->config );
+			$handler->register();
+
+			if ( true === ( $this->config['debug_logging'] ?? false ) ) {
+				error_log( sprintf(
+					'[art-settings][htmx][debug] handler registered for slug %s',
+					(string) ( $this->config['menu']['menu_slug'] ?? '' )
+				) );
+			}
+		}
 	}
 
 
@@ -237,6 +249,10 @@ class SettingsManager {
 		$settings = $this->repository->get();
 
 		foreach ( $this->get_registered_fields() as $field_id => $field_object ) {
+			if ( $field_object instanceof \Art\Settings\Fields\Button ) {
+				continue;
+			}
+
 			$is_in_post = array_key_exists( $field_id, $_POST );
 			$is_boolean = $field_object instanceof \Art\Settings\Fields\Checkbox
 			              || $field_object instanceof \Art\Settings\Fields\Toggle;
