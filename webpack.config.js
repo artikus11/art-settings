@@ -25,6 +25,7 @@ module.exports = {
 	entry: {
 		main: path.resolve( process.cwd(), 'src/js', 'main.js' ),
 		"ast-admin-script":  path.resolve( process.cwd(), 'src/js', 'admin-script.js' ),
+		"ast-admin-htmx":  path.resolve( process.cwd(), 'src/js', 'htmx.js' ),
 		"ast-admin-style":  path.resolve( process.cwd(), 'src/scss', 'admin-style.scss' ),
 	},
 	output: {

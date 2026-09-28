@@ -8,6 +8,7 @@ use Art\Settings\Fields\Text;
 use Art\Settings\Tests\Support\InMemorySettingsRepository;
 use Art\Settings\Tests\Support\TestableSettingsManager;
 use Art\Settings\Tests\TestCase;
+use WP_Mock;
 
 class SettingsManagerTest extends TestCase {
 
@@ -342,6 +343,82 @@ class SettingsManagerTest extends TestCase {
 		] );
 
 		$this->assertSame( '/tmp/custom-art-settings', $manager->run_get_library_root() );
+	}
+
+
+	public function test_enqueue_assets_enqueues_htmx_only_when_enabled(): void {
+
+		global $test_enqueued_assets;
+
+		$test_enqueued_assets = [];
+
+		WP_Mock::userFunction( 'wp_enqueue_style', [
+			'return' => static function ( $handle, $src, $deps, $ver ) {
+
+				global $test_enqueued_assets;
+
+				$test_enqueued_assets[] = [ $handle, $src, $deps, $ver, false ];
+			},
+		] );
+
+		WP_Mock::userFunction( 'wp_enqueue_script', [
+			'return' => static function ( $handle, $src, $deps, $ver, $in_footer ) {
+
+				global $test_enqueued_assets;
+
+				$test_enqueued_assets[] = [ $handle, $src, $deps, $ver, $in_footer ];
+			},
+		] );
+
+		WP_Mock::userFunction( 'content_url', [
+			'return' => 'https://example.com/wp-content/',
+		] );
+
+		// Без htmx — ассет ast-admin-htmx не подключается.
+		$manager = new TestableSettingsManager( [
+			'option_key' => 'sklds_options',
+			'menu'       => [ 'menu_slug' => 'sklds-settings' ],
+			'assets_dir' => '/tmp/custom-art-settings',
+			'assets_url' => 'https://example.com/wp-content/custom-art-settings/assets',
+			'tabs'       => [],
+		] );
+
+		$manager->enqueue_assets( 'toplevel_page_sklds-settings' );
+
+		$this->assertTrue( ! empty( $test_enqueued_assets ), 'ожидались вызовы wp_enqueue_*' );
+
+		$handles_without_htmx = array_filter(
+			$test_enqueued_assets,
+			static function ( $args ) {
+
+				return str_contains( (string) ( $args[0] ?? '' ), 'ast-admin-htmx' );
+			}
+		);
+		$this->assertCount( 0, $handles_without_htmx );
+
+		// С htmx => true — скрипт ast-admin-htmx подключается.
+		$manager_htmx = new TestableSettingsManager( [
+			'option_key' => 'sklds_options',
+			'menu'       => [ 'menu_slug' => 'sklds-settings' ],
+			'assets_dir' => '/tmp/custom-art-settings',
+			'assets_url' => 'https://example.com/wp-content/custom-art-settings/assets',
+			'htmx'       => true,
+			'tabs'       => [],
+		] );
+
+		$manager_htmx->enqueue_assets( 'toplevel_page_sklds-settings' );
+
+		$htmx_handles = array_values( array_filter(
+			$test_enqueued_assets,
+			static function ( $args ) {
+
+				return str_contains( (string) ( $args[0] ?? '' ), 'ast-admin-htmx' );
+			}
+		) );
+
+		$this->assertCount( 1, $htmx_handles );
+		$this->assertSame( 'ast-admin-htmx-sklds-settings', $htmx_handles[0][0] );
+		$this->assertTrue( $htmx_handles[0][4] ); // in_footer
 	}
 
 

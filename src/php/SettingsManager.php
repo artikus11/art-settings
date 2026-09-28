@@ -309,6 +309,15 @@ class SettingsManager {
 			],
 		];
 
+		if ( true === ( $this->config['htmx'] ?? false ) ) {
+			$assets['htmx'] = [
+				'handle'    => $this->get_asset_handle( 'ast-admin-htmx' ),
+				'rel_path'  => 'js/ast-admin-htmx.min.js',
+				'deps'      => [],
+				'in_footer' => true,
+			];
+		}
+
 		foreach ( $assets as $type => $asset ) {
 			$file_path = $base_dir . '/assets/' . $asset['rel_path'];
 			$version   = file_exists( $file_path ) ? (string) filemtime( $file_path ) : '1.0.0';
