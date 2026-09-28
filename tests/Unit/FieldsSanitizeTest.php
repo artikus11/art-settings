@@ -8,6 +8,7 @@ use Art\Settings\Fields\Number;
 use Art\Settings\Fields\Select;
 use Art\Settings\Fields\Text;
 use Art\Settings\Fields\Textarea;
+use Art\Settings\Fields\Toggle;
 use Art\Settings\Tests\TestCase;
 
 class FieldsSanitizeTest extends TestCase {
@@ -71,5 +72,17 @@ class FieldsSanitizeTest extends TestCase {
 
 		$this->assertSame( '#ff00aa', $field->sanitize( '#ff00aa' ) );
 		$this->assertSame( '', $field->sanitize( 'red' ) );
+	}
+
+
+	public function test_toggle_casts_to_boolean(): void {
+
+		$field = new Toggle();
+
+		$this->assertTrue( $field->sanitize( '1' ) );
+		$this->assertTrue( $field->sanitize( 'on' ) );
+		$this->assertFalse( $field->sanitize( null ) );
+		$this->assertFalse( $field->sanitize( '0' ) );
+		$this->assertFalse( $field->sanitize( false ) );
 	}
 }
