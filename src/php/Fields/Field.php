@@ -72,6 +72,12 @@ abstract class Field {
 	}
 
 
+	public function get_renderer(): ?PageRenderer {
+
+		return $this->renderer;
+	}
+
+
 	public function get_attribute( string $key, mixed $default = null ): mixed {
 
 		return $this->attributes[ $key ] ?? $default;
