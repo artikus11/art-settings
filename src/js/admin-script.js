@@ -6,6 +6,13 @@
 	'use strict';
 
 	const INDEX_PLACEHOLDER = '__INDEX__';
+	const DEBUG_FIX = Boolean( window.astSettingsDebug );
+
+	function logFix( message, data ) {
+		if ( DEBUG_FIX && window.console ) {
+			window.console.log( '[FIX]', message, data );
+		}
+	}
 
 	/**
 	 * Экспонирует текущий индекс строки в name/id/for атрибутах вложенных полей.
@@ -47,7 +54,7 @@
 			reindexRow( row, fieldId, index );
 			const label = row.querySelector( '.ast__repeater-row-label' );
 			if ( label ) {
-				label.textContent = label.textContent.replace( /#\d+$/, '#' + ( index + 1 ) );
+				label.textContent = label.textContent.replace( /#(?:__INDEX__|\d+)$/, '#' + ( index + 1 ) );
 			}
 		} );
 	}
@@ -88,6 +95,7 @@
 
 		container.querySelector( '[data-repeater-rows]' ).appendChild( clone );
 		renumberRows( container, fieldId );
+		logFix( 'Repeater row added', { fieldId, rowIndex: currentRows } );
 	}
 
 	/**
@@ -108,6 +116,7 @@
 
 		row.remove();
 		renumberRows( container, fieldId );
+		logFix( 'Repeater row removed', { fieldId } );
 	}
 
 	function initRepeaters() {

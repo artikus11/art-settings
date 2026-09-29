@@ -25,6 +25,12 @@ while ( $rows_count < $min_rows ) {
 	data-field-id="<?php echo esc_attr( $field_id ); ?>"
 	data-min-rows="<?php echo esc_attr( (string) $min_rows ); ?>"
 	data-max-rows="<?php echo esc_attr( null !== $max_rows ? (string) $max_rows : '' ); ?>">
+	<button type="button"
+			class="button ast__repeater-add"
+			data-repeater-add>
+		<?php echo esc_html( $field->get_button_label() ); ?>
+	</button>
+
 	<div class="ast__repeater-rows"
 		data-repeater-rows>
 		<?php foreach ( $rows as $row_index => $row ) : ?>

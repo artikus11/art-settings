@@ -53,6 +53,12 @@ function _toConsumableArray(r) {
   'use strict';
 
   var INDEX_PLACEHOLDER = '__INDEX__';
+  var DEBUG_FIX = Boolean(window.astSettingsDebug);
+  function logFix(message, data) {
+    if (DEBUG_FIX && window.console) {
+      window.console.log('[FIX]', message, data);
+    }
+  }
 
   /**
    * Экспонирует текущий индекс строки в name/id/for атрибутах вложенных полей.
@@ -89,7 +95,7 @@ function _toConsumableArray(r) {
       reindexRow(row, fieldId, index);
       var label = row.querySelector('.ast__repeater-row-label');
       if (label) {
-        label.textContent = label.textContent.replace(/#\d+$/, '#' + (index + 1));
+        label.textContent = label.textContent.replace(/#(?:__INDEX__|\d+)$/, '#' + (index + 1));
       }
     });
   }
@@ -125,6 +131,10 @@ function _toConsumableArray(r) {
     });
     container.querySelector('[data-repeater-rows]').appendChild(clone);
     renumberRows(container, fieldId);
+    logFix('Repeater row added', {
+      fieldId: fieldId,
+      rowIndex: currentRows
+    });
   }
 
   /**
@@ -141,6 +151,9 @@ function _toConsumableArray(r) {
     }
     row.remove();
     renumberRows(container, fieldId);
+    logFix('Repeater row removed', {
+      fieldId: fieldId
+    });
   }
   function initRepeaters() {
     document.addEventListener('click', function (event) {

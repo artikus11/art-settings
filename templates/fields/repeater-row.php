@@ -10,15 +10,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-$field_id  = (string) $field->get_id();
-$row_label = $field->get_row_label();
-$row_index = (string) $row_index;
-$is_label  = '' !== $row_label && ! in_array( $row_index, [ '__INDEX__' ], true );
+$field_id   = (string) $field->get_id();
+$row_label  = $field->get_row_label();
+$row_index  = (string) $row_index;
+$is_label   = '' !== $row_label;
+$row_number = '__INDEX__' === $row_index ? '__INDEX__' : (string) ( (int) $row_index + 1 );
 ?>
 <div class="ast__repeater-row"
 	data-repeater-row>
 	<?php if ( $is_label ) : ?>
-		<span class="ast__repeater-row-label"><?php echo esc_html( $row_label ); ?> #<?php echo esc_html( (string) ( (int) $row_index + 1 ) ); ?></span>
+		<span class="ast__repeater-row-label"><?php echo esc_html( $row_label ); ?> #<?php echo esc_html( $row_number ); ?></span>
 	<?php endif; ?>
 
 	<?php foreach ( $field->get_fields() as $sub_field_id => $sub_field ) : ?>
