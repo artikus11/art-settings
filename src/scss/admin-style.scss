@@ -494,6 +494,14 @@
   }
 
   &__repeater {
+    box-sizing: border-box;
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: inherit;
+    }
+
     display: flex;
     flex-direction: column;
     align-items: flex-start;
