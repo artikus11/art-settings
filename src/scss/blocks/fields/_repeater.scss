@@ -22,9 +22,8 @@
 
 .ast__repeater-row {
   display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  gap: 0.75em;
+  flex-direction: column;
+  gap: 0.5em;
   width: 100%;
   padding: 0.75em;
   background: #fff;
@@ -33,17 +32,21 @@
 }
 
 .ast__repeater-row-label {
-  flex: 0 0 100%;
   font-size: 12px;
   font-weight: 600;
   color: #50575e;
+}
+
+.ast__repeater-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 0.75em;
 }
 
 .ast__repeater-field {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  flex: 1 1 0;
   min-width: 0;
 
   .ast__label {
@@ -51,4 +54,17 @@
     font-weight: 500;
     color: #50575e;
   }
+
+  input[type='text'],
+  input[type='url'],
+  input[type='email'],
+  input[type='number'],
+  select,
+  textarea {
+    max-width: 100%;
+  }
+}
+
+.ast__repeater-remove {
+  align-self: flex-end;
 }

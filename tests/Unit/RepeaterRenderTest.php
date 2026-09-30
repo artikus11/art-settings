@@ -122,8 +122,10 @@ class RepeaterRenderTest extends TestCase {
 
 		$html = $this->render_repeater( $repeater );
 
-		// 2 под-поля × 2 строки (видимая строка min_rows=1 + шаблонная) = 4 блока.
-		self::assertSame( 4, substr_count( $html, 'ast__repeater-field' ) );
+		// 2 под-поля × 2 строки (видимая строка min_rows=1 + шаблонная) = 4 блока
+		// + 2 обёртки .ast__repeater-fields (по одной на строку).
+		self::assertSame( 2, substr_count( $html, 'ast__repeater-fields' ) );
+		self::assertSame( 4, substr_count( $html, 'class="ast__repeater-field"' ) );
 		self::assertStringContainsString( 'hero_repeater[0][title]', $html );
 		self::assertStringContainsString( 'hero_repeater[0][description]', $html );
 	}
