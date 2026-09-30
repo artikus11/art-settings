@@ -214,31 +214,179 @@ add_action( 'plugins_loaded', function() {
 } );
 ```
 
-### Поле выбора цвета (`ColorPicker`)
+## Поля библиотеки (Field Types)
 
-Поле `ColorPicker` использует встроенный интерфейс `wp-color-picker` и не требует подключения внешних скриптов в
-`SettingsManager`. Ассеты подключаются автоматически при рендере поля.
+Все поля наследуют `Art\Settings\Fields\Field` и принимают базовые аргументы `label`, `description`, `default`,
+`attributes` (произвольные HTML-атрибуты: `placeholder`, `min`, `max`, `step`, `class` и т.д.).
 
-#### Инициализация в массиве секции
+### Text
+
+```php
+use Art\Settings\Fields\Text;
+
+'api_key' => new Text( [
+    'label'       => 'API Ключ',
+    'description' => 'Введите ключ доступа.',
+    'default'     => '',
+    'attributes'  => [
+        'placeholder' => 'sk-...',
+        'class'       => 'regular-text',
+    ],
+] ),
+```
+
+### Textarea
+
+```php
+use Art\Settings\Fields\Textarea;
+
+'about' => new Textarea( [
+    'label'      => 'Описание',
+    'default'    => '',
+    'attributes' => [
+        'rows' => 4,
+        'cols' => 50,
+    ],
+] ),
+```
+
+### Number
+
+```php
+use Art\Settings\Fields\Number;
+
+'batch_size' => new Number( [
+    'label'      => 'Товаров за батч',
+    'default'    => 500,
+    'attributes' => [
+        'min'  => 1,
+        'max'  => 5000,
+        'step' => 1,
+    ],
+] ),
+```
+
+### Select
+
+```php
+use Art\Settings\Fields\Select;
+
+'currency' => new Select( [
+    'label'   => 'Валюта',
+    'options' => [
+        'USD' => 'USD ($)',
+        'EUR' => 'EUR (€)',
+        'RUB' => 'RUB (₽)',
+    ],
+    'default' => 'USD',
+] ),
+```
+
+### Radio
+
+```php
+use Art\Settings\Fields\Radio;
+
+'layout' => new Radio( [
+    'label'   => 'Раскладка',
+    'options' => [
+        'grid' => 'Сетка',
+        'list' => 'Список',
+    ],
+    'default' => 'grid',
+] ),
+```
+
+### Checkbox
+
+```php
+use Art\Settings\Fields\Checkbox;
+
+'enable_cache' => new Checkbox( [
+    'label'   => 'Включить кеширование',
+    'default' => true,
+] ),
+```
+
+### Toggle
+
+Переключатель-слайдер (стили `.switch`).
+
+```php
+use Art\Settings\Fields\Toggle;
+
+'cron_enabled' => new Toggle( [
+    'label'   => 'Периодический запуск',
+    'default' => false,
+] ),
+```
+
+### ColorPicker
+
+Использует встроенный интерфейс `wp-color-picker`, ассеты подключаются автоматически при рендере поля.
 
 ```php
 use Art\Settings\Fields\ColorPicker;
 
-'banner_styles' => [
-    'title'  => 'Оформление баннера',
-    'fields' => [
-        'bg_color' => new ColorPicker( [
-            'label'       => 'Цвет фона',
-            'description' => 'Основной цвет фона для промо-блока.',
-            'default'     => '#f3f4f6',
-        ] ),
-        'text_color' => new ColorPicker( [
-            'label'       => 'Цвет текста',
-            'description' => 'Цвет заголовка и основного текста.',
-            'default'     => '#1f2937',
-        ] ),
+'bg_color' => new ColorPicker( [
+    'label'       => 'Цвет фона',
+    'description' => 'Основной цвет фона для промо-блока.',
+    'default'     => '#f3f4f6',
+] ),
+```
+
+### Repeater
+
+Повторяющиеся строки вложенных полей. Кнопка «Добавить» доступна сверху и снизу, строкам присваивается
+`row_label` с порядковым номером. Под-поля раскладываются CSS Grid и переносятся на новые линии при нехватке
+ширины (корректно работает даже в узкой ячейке `form-table`).
+
+```php
+use Art\Settings\Fields\Repeater;
+use Art\Settings\Fields\Text;
+use Art\Settings\Fields\Number;
+
+'price_rules' => new Repeater( [
+    'label'        => 'Правила цен',
+    'row_label'    => 'Правило',
+    'min_rows'     => 1,
+    'max_rows'     => 10,
+    'button_label' => 'Добавить правило',
+    'fields'       => [
+        'name'   => new Text( [ 'label' => 'Имя', 'default' => '' ] ),
+        'amount' => new Number( [ 'label' => 'Сумма', 'default' => 0 ] ),
     ],
+    'default' => [],
+] ),
+```
+
+### Button
+
+Кнопка-экшен с HTMX: отправляет `ast_action` в `admin-ajax` (`art_settings_htmx`), ответ `{ result: <mixed> }`
+обрабатывается HTMX. Колбеки регистрируются в конфиге через `htmx_callbacks`.
+
+```php
+use Art\Settings\Fields\Button;
+
+'sync_btn' => new Button( [
+    'label'     => 'Запустить синхронизацию',
+    'action'    => 'sync_now',
+    'confirm'   => 'Запустить синхронизацию?',
+    'css_class' => 'button-secondary',
+] ),
+```
+
+Колбек в конфиге:
+
+```php
+'htmx_callbacks' => [
+    'sync_now' => function( array $args ): array {
+        // ... синхронизация ...
+        return [ 'message' => 'Запущено' ];
+    },
 ],
+```
+
 ---
 
 ## Создание кастомного поля
@@ -449,6 +597,37 @@ my-plugin/
 ---
 
 ## Changelog
+
+### 1.5.3
+
+* Репитер: под-поля обёрнуты в `.ast__repeater-fields` (CSS Grid `auto-fill minmax(180px, 1fr)`) — поля не
+  сжимаются ниже 180px и переносятся на новые линии при нехватке ширины (корректно в узкой ячейке `form-table`,
+  2/3/5 полей в строке).
+* Контролам в строке репитера задан `max-width: 100%`; кнопка удаления прижата вправо.
+
+### 1.5.2
+
+* Фикс: `box-sizing: border-box` на поддереве `.ast__repeater` — строка `width: 100%` + `padding`/рамка больше не
+  вылезают за контейнер.
+* Рефакторинг SCSS: `admin-style.scss` разбит на блоки `src/scss/blocks/` (`_header`, `_tabs`, `_body`, `_section`,
+  `_status`, `_accordion`, `_actions`, `fields/_toggle`, `fields/_repeater`); входной файл — только `@use`-импорты.
+  Скомпилированный CSS не изменился.
+
+### 1.5.1
+
+* Репитер: кнопка «Добавить» продублирована сверху и снизу строк.
+* Лейбл строки (`row_label`) копируется при добавлении: в шаблонной строке рендерится `#__INDEX__`, JS
+  перенумеровывает его в `#N`.
+* Стили строк: поля растягиваются на всю ширину, лейбл над инпутом (меньший размер шрифта).
+* `RepeaterRenderTest` — юнит-покрытие рендера (кнопки, лейбл, обёртки).
+
+### 1.5.0
+
+* Поле `Toggle` — переключатель-слайдер (`.switch`).
+* Поле `Repeater` — повторяющиеся строки вложенных полей с JS-добавлением/удалением и реиндексацией
+  `name`/`id`/`for`.
+* Поле `Button` с HTMX: колбеки через `htmx_callbacks` в конфиге, ответ `{ result: <mixed> }`.
+* Интеграция HTMX: webpack-бандл `ast-admin-htmx`, общий диспетчер HTMX-колбеков.
 
 ### 1.4.1
 * дополнительные колнки для вкладок
