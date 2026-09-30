@@ -1,0 +1,52 @@
+.ast__body {
+  max-width: 800px;
+  margin: 0 auto;
+
+  .settings-wrapper,
+  .accordions-wrapper {
+    margin-bottom: 2rem;
+  }
+
+  .accordions-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .accordion-item {
+    border-top: 1px solid #c3c4c7;
+  }
+
+  .accordion-item:first-child {
+    border-top: none;
+  }
+
+
+  .js-spoiler-content {
+    display: none;
+  }
+
+  .js-spoiler-content.is-active {
+    display: table;
+  }
+
+  .js-spoiler-trigger {
+    display: flex;
+  }
+
+  .button {
+    display: flex;
+    align-items: center;
+  }
+
+  .button-remove {
+    color: var(--wc-red);
+    border-color: var(--wc-red);
+  }
+
+  .accordion-actions {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+}
