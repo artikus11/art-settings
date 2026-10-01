@@ -1,0 +1,120 @@
+@use "../variables" as *;
+
+.scan-empty,
+.scan-card,
+.scan-legend {
+	background: $color-bg-card;
+	border: 1px solid $color-border-light;
+	border-radius: 3px;
+	padding: 20px;
+	margin-bottom: 16px;
+}
+
+.scan-empty {
+	&__title {
+		margin: 0 0 10px;
+		font-size: 18px;
+	}
+
+	&__desc {
+		font-size: 13px;
+		color: $color-text-muted;
+	}
+
+	&__actions {
+		text-align: left;
+		background: $color-bg-main;
+		border: 1px solid $color-border-light;
+		padding: 16px;
+		font-size: 13px;
+	}
+}
+
+.scan-legend {
+	&__title {
+		font-weight: 600;
+		margin-bottom: 10px;
+	}
+
+	&__items {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 12px;
+		font-size: 13px;
+	}
+
+	&__item {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+	}
+
+	&__dot {
+		width: 10px;
+		height: 10px;
+		border-radius: 50%;
+
+		&--pending { background: $status-pending; }
+		&--processing { background: $status-processing; }
+		&--error { background: $status-error; }
+	}
+}
+
+.scan-card {
+	&__header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		border-bottom: 1px solid #f1f5f9;
+		padding-bottom: 12px;
+		margin-bottom: 16px;
+	}
+
+	&__info {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+	}
+
+	&__heading {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 2px;
+	}
+
+	&__scan-id {
+		font-size: 11px;
+		color: $color-text-muted;
+	}
+
+	&__meta {
+		display: flex;
+		align-items: flex-start;
+		gap: 4px;
+		font-size: 12px;
+		flex-direction: column;
+		justify-content: flex-start;
+
+		.scan-card__meta-block {
+			display: flex;
+			align-items: flex-start;
+			gap: 4px;
+
+			.scan-card__meta-label {
+				font-size: 11px;
+				color: $color-text-muted;
+			}
+
+			.scan-card__meta-value {
+				font-weight: 600;
+				color: $color-text-sub;
+			}
+		}
+	}
+
+	&__title {
+		margin: 0;
+		font-size: 16px;
+	}
+}

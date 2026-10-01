@@ -1,0 +1,91 @@
+@use "../variables" as *;
+
+@keyframes scan-pulse {
+	0% { opacity: 1; }
+	50% { opacity: 0.7; }
+	100% { opacity: 1; }
+}
+
+.scan-pipeline {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 16px;
+
+	@media (max-width: $breakpoint-sm) {
+		grid-template-columns: 1fr;
+	}
+}
+
+.stage {
+	background: $color-bg-main;
+	border: 1px solid $color-border-light;
+	border-radius: 3px;
+	padding: 14px;
+
+	&--has-data {
+		background: $color-bg-card;
+		border-color: $color-border-dark;
+	}
+
+	&--processing {
+		border-color: $status-processing;
+		box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.08);
+	}
+
+	&__number {
+		font-size: 10px;
+		font-weight: 700;
+		color: #94a3b8;
+		text-transform: uppercase;
+	}
+
+	&__name {
+		font-size: 13px;
+		font-weight: 600;
+	}
+
+	&__skip-hint {
+		margin: 8px 0 0;
+		font-size: 11px;
+		line-height: 1.4;
+		color: $color-text-muted;
+	}
+
+	&__progress {
+		height: 6px;
+		background: $color-border-light;
+		border-radius: 3px;
+		overflow: hidden;
+		margin: 10px 0 4px;
+
+		.stage__progress-bar {
+			display: block;
+			height: 100%;
+			background: $status-processing;
+			border-radius: 3px;
+			width: calc( var( --pct ) * 1% );
+		}
+	}
+
+	&__metric {
+		display: flex;
+		justify-content: space-between;
+		padding: 4px 8px;
+		font-size: 12px;
+		margin-top: 6px;
+		border-radius: 4px;
+
+		&--pulse {
+			background: #dbeafe;
+			animation: scan-pulse 2s infinite;
+		}
+
+		&--has-errors {
+			background: #fee2e2;
+		}
+
+		&--has-skipped {
+			background: #fef3c7;
+		}
+	}
+}

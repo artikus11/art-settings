@@ -596,6 +596,65 @@ my-plugin/
 
 ---
 
+## SCSS-кит дашборда (dashboard kit)
+
+Общие элементы интерфейса дашборда, которые раньше копировались в каждый плагин
+(`skl-dedup-scan`, `skl-title-uniq`, `skl-product-feed`): палитра, HTMX-база, тулбар
+со статусом, карточки, метрики, стадии пайплайна, бейджи, пагинация, debug-панель,
+info-карточки.
+
+### Исходники
+
+Модули лежат в `src/scss/dashboard/`:
+
+| Модуль | Что содержит |
+|--------|-------------|
+| `variables` | Палитра `$color-*`, `$status-*`, `$breakpoint-*`, WP-палитра `$wp-*` |
+| `base` | `@keyframes htmx-btn-spin`, `.htmx-indicator`, `.loading`, `.is-hidden` |
+| `blocks/controls` | `.scan-controls` (тулбар + статус-точка + пульс), `.btn-global-start/stop` |
+| `blocks/card` | `.scan-card`, `.scan-empty`, `.scan-legend` |
+| `blocks/stats` | `.stat-grid`, `.stat-card` (variants `--success/--skip/--total/--link/--cta`) |
+| `blocks/pipeline` | `.scan-pipeline`, `.stage` |
+| `blocks/badge` | `.mode-badge` |
+| `blocks/pagination` | `.pagination` |
+| `blocks/debug` | `.debug-panel`, `.debug-card`, debug-кнопки |
+| `blocks/info` | `.info-card` |
+
+### Подключение через SCSS-исходники
+
+Плагин подключает кит через `@use`, для этого в sass-loader добавляется
+`includePaths` на `vendor/art/settings/src/scss`:
+
+```js
+// webpack.config.js
+{ loader: 'sass-loader', options: { implementation: require( 'sass' ),
+  sassOptions: { includePaths: [ path.resolve( __dirname, 'vendor/art/settings/src/scss' ) ] } } }
+```
+
+```scss
+// src/scss/admin-style.scss
+@use "dashboard/variables" as *;
+@use "dashboard/base";
+@use "dashboard/blocks/controls";
+@use "dashboard/blocks/card";
+@use "dashboard/blocks/stats";
+@use "dashboard/blocks/badge";
+@use "dashboard/blocks/pagination";
+
+// Дальше плагин-специфичные блоки.
+@use "blocks/plugin-specific";
+```
+
+Если нужно переопределить переменные — используйте `@use "dashboard/variables" with (...)`.
+
+### Готовый CSS
+
+Для плагинов, которые не собирают свои стили, собирается пребилт
+`assets/css/ast-dashboard-style.min.css` (webpack entry `ast-dashboard-style`).
+Подключить его можно, например, в `admin_enqueue_scripts` страницы настроек.
+
+---
+
 ## Changelog
 
 ### 1.5.3

@@ -1,0 +1,18 @@
+@use "../variables" as *;
+
+.pagination {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 4px;
+
+	&:first-child {
+		margin-bottom: 12px;
+	}
+
+	&__gap,
+	&__meta {
+		align-self: center;
+		padding: 0 6px;
+		color: $wp-text-muted;
+	}
+}

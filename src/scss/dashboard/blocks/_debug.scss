@@ -1,0 +1,133 @@
+@use "../variables" as *;
+
+.debug-panel {
+	&__warning {
+		background: #fffbeb;
+		border: 1px solid #fef3c7;
+		color: #92400e;
+		padding: 12px 16px;
+		border-radius: 3px;
+		font-size: 13px;
+		margin-bottom: 20px;
+	}
+
+	&__grid {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 16px;
+		margin-bottom: 20px;
+
+		@media (max-width: $breakpoint-sm) {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	&__divider {
+		border: 0;
+		border-top: 1px solid $color-border-light;
+		margin: 24px 0;
+	}
+
+	&__action-divider {
+		flex-basis: 100%;
+		height: 1px;
+		background: $color-border-light;
+		border: 0;
+		margin: 8px 0;
+	}
+
+	&__tools {
+		display: grid;
+		grid-template-columns: 1fr 3fr;
+		gap: 20px;
+
+		@media (max-width: $breakpoint-sm) {
+			grid-template-columns: 1fr;
+		}
+
+		h4 {
+			margin: 0 0 12px;
+			font-size: 14px;
+		}
+	}
+
+	&__links {
+		.debug-panel__links-list {
+			margin: 0;
+			padding: 0;
+			list-style: none;
+
+			li {
+				margin-bottom: 10px;
+			}
+
+			a {
+				display: inline-flex;
+				align-items: center;
+				text-decoration: none;
+			}
+		}
+	}
+
+	&__reset-desc {
+		font-size: 12px;
+		color: $color-text-muted;
+		margin: 0 0 14px;
+	}
+
+	&__actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 10px;
+	}
+}
+
+.debug-card {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+
+	&__step {
+		font-size: 10px;
+		font-weight: 700;
+		color: #94a3b8;
+		text-transform: uppercase;
+	}
+}
+
+.debug-button--danger {
+	border-color: $color-border-light !important;
+	background: #fff !important;
+	color: $color-text-sub !important;
+
+	&:hover {
+		border-color: #d63638 !important;
+		color: #d63638 !important;
+	}
+}
+
+.button {
+	&.debug-button--reset {
+		background: #d63638 !important;
+		border: none;
+		color: #fff !important;
+	}
+
+	&.debug-button--run {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 6px;
+		height: auto;
+		padding: 6px 12px;
+		line-height: 1.4;
+		font-size: 12px;
+		font-weight: 500;
+		text-align: center;
+		white-space: normal;
+		border-color: #cbd5e1;
+		color: #334155;
+		background: #f8fafc;
+		transition: all .15s ease;
+	}
+}

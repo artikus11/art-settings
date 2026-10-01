@@ -1,0 +1,60 @@
+@use "../variables" as *;
+
+.stat-grid {
+	display: grid;
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+	gap: 12px;
+	margin-bottom: 20px;
+
+	@media (max-width: $breakpoint-md) {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+.stat-card {
+	background: $color-bg-main;
+	border: 1px solid $color-border-light;
+	border-radius: 3px;
+	padding: 10px 14px;
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+
+	&--success { background: #f0fdf4; border-color: #bbf7d0; }
+	&--skip { background: #fffbeb; border-color: #fde68a; }
+	&--total { background: #fdf2f8; border-color: #fbcfe8; }
+
+	&--link {
+		text-decoration: none;
+		color: inherit;
+
+		&:hover {
+			border-color: $status-processing;
+			box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.25);
+		}
+
+		.stat-card__label {
+			color: $color-text-sub;
+		}
+	}
+
+	&--cta {
+		border-color: $status-processing;
+		box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.2);
+	}
+
+	&__label {
+		font-size: 11px;
+		color: $color-text-muted;
+	}
+
+	&__value {
+		font-size: 15px;
+		font-weight: 700;
+	}
+
+	&__sub {
+		font-size: 11px;
+		color: $color-text-muted;
+	}
+}
