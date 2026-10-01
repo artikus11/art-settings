@@ -657,6 +657,15 @@ info-карточки.
 
 ## Changelog
 
+### 1.6.0
+
+* Новый SCSS-кит дашборда `src/scss/dashboard/`: палитра (`variables`), HTMX-база (`base`) и блоки
+  `controls/card/stats/pipeline/badge/pagination/debug/info` — общие элементы, которые раньше копировались
+  в каждый плагин (`skl-dedup-scan`, `skl-title-uniq`, `skl-product-feed`).
+* Подключение через `@use "dashboard/..."` (в sass-loader добавить `includePaths` на
+  `vendor/art/settings/src/scss`); пребилт — новый webpack entry `ast-dashboard-style`
+  (`assets/css/ast-dashboard-style.min.css`).
+
 ### 1.5.3
 
 * Репитер: под-поля обёрнуты в `.ast__repeater-fields` (CSS Grid `auto-fill minmax(180px, 1fr)`) — поля не
