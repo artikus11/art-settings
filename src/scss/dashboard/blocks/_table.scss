@@ -1,0 +1,39 @@
+@use "../variables" as *;
+
+.table-bar {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	align-items: center;
+	margin: 0 0 12px;
+}
+
+.table-wrap {
+	overflow-x: auto;
+	max-width: 100%;
+	-webkit-overflow-scrolling: touch;
+	margin: 0 0 12px;
+}
+
+.table-data {
+	width: 100%;
+
+	th,
+	td {
+		vertical-align: top;
+	}
+
+	&--fixed {
+		table-layout: fixed;
+	}
+}
+
+.journal {
+	margin: 20px 0 0;
+
+	&__title {
+		font-size: 15px;
+		font-weight: 600;
+		margin: 0 0 12px;
+	}
+}

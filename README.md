@@ -619,6 +619,7 @@ info-карточки.
 | `blocks/pagination` | `.pagination` |
 | `blocks/debug` | `.debug-panel`, `.debug-card`, debug-кнопки |
 | `blocks/info` | `.info-card` |
+| `blocks/table` | `.table-bar` (тулбар), `.table-wrap` (скролл + отступ), `.table-data[--fixed]`, `.journal` |
 
 ### Подключение через SCSS-исходники
 
