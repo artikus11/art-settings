@@ -1,0 +1,122 @@
+@use "../variables" as *;
+
+.ast__filter-panel {
+	background: $color-bg-card;
+	border: 1px solid $wp-border;
+	border-radius: 3px;
+	padding: 14px 16px;
+	margin-bottom: 16px;
+
+	&-title {
+		margin: 0 0 10px;
+		font-size: 13px;
+		font-weight: 600;
+		color: $wp-text-dark;
+	}
+}
+
+.ast__filter-grid {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 12px 16px;
+	align-items: end;
+
+	&-search,
+	&-full {
+		grid-column: 1 / -1;
+	}
+}
+
+.ast__filter-field {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.ast__filter-field input[type="search"] {
+	width: 100%;
+}
+
+.ast__range {
+	position: relative;
+	display: block;
+	height: 22px;
+
+	&-caption {
+		display: block;
+		margin-bottom: 4px;
+		font-size: 12px;
+		color: $wp-text-dark;
+
+		.ast__range-min-input,
+		.ast__range-max-input {
+			width: 56px;
+			padding: 0 4px;
+			text-align: center;
+			color: $wp-accent;
+		}
+	}
+
+	&-track,
+	&-fill {
+		position: absolute;
+		top: 9px;
+		height: 4px;
+		border-radius: 2px;
+	}
+
+	&-track {
+		left: 0;
+		right: 0;
+		background: $wp-border;
+	}
+
+	&-fill {
+		background: $wp-accent;
+	}
+
+	input[type="range"] {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 22px;
+		margin: 0;
+		padding: 0;
+		background: none;
+		pointer-events: none;
+		appearance: none;
+	}
+
+	input[type="range"]::-webkit-slider-runnable-track {
+		background: transparent;
+		border: none;
+	}
+
+	input[type="range"]::-webkit-slider-thumb {
+		appearance: none;
+		pointer-events: auto;
+		width: 16px;
+		height: 16px;
+		border-radius: 50%;
+		background: #fff;
+		border: 2px solid $wp-accent;
+		box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+		cursor: pointer;
+	}
+
+	input[type="range"]::-moz-range-track {
+		background: transparent;
+		border: none;
+	}
+
+	input[type="range"]::-moz-range-thumb {
+		pointer-events: auto;
+		width: 12px;
+		height: 12px;
+		border-radius: 50%;
+		background: #fff;
+		border: 2px solid $wp-accent;
+		cursor: pointer;
+	}
+}

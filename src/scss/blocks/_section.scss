@@ -1,94 +1,12 @@
-.ast__body {
-  .section-settings {
-    margin-bottom: 1rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid #dcdcde;
-
-    &--donor-info {
-      display: flex;
-      gap: 12px;
-      font-size: 12px;
-      font-weight: normal;
-      color: var(--wc-subtext);
-      white-space: nowrap;
-
-      .donor-id {
-      }
-
-      .donor-check {
-        display: flex;
-        gap: 4px;
-
-      }
-    }
-
-    &--donor-mapping {
-      display: grid;
-      gap: 4px;
-      align-items: center;
-
-      .mapping-controls {
-        display: flex;
-        gap: 4px;
-        align-items: center;
-        justify-content: space-between;
-
-        &--inner {
-          display: flex;
-          gap: 4px;
-          align-items: center;
-        }
-      }
-
-      .mapping-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 1px;
-        background: #edfaef;
-        padding: 2px 8px 2px 4px;
-        border-radius: 4px;
-        border: 1px solid #b8e6c1;
-        color: var(--wc-subtext);
-        font-size: 12px;
-
-        &.is-active {
-          animation: sklpf-fade-in 0.3s ease;
-        }
-      }
-
-
-    }
-
-    &--debug-buttons {
-      border-bottom: none;
-    }
-
-    &--donor-pipeline-settings {
-      h4 {
-        font-size: 1rem;
-        margin: 0;
-      }
-
-      .stage-header-row {
-        border-top: 1px solid #dcdcde;
-
-        &:first-child {
-          border: none;
-        }
-      }
-    }
-  }
-}
-
 .ast__section-wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 1.25em;
-  margin: 0 0 2em;
+	display: flex;
+	flex-direction: column;
+	gap: 1.25em;
+	margin: 0 0 2em;
 }
 
 .ast__section {
-  margin: 0;
-  padding: 1em 1.5em;
-  background: #fff;
+	margin: 0;
+	padding: 1em 1.5em;
+	background: #fff;
 }

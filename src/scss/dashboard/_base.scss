@@ -1,8 +1,4 @@
-@keyframes htmx-btn-spin {
-	to {
-		transform: rotate(360deg);
-	}
-}
+@use "../keyframes";
 
 .htmx-indicator {
 	display: none !important;
@@ -17,17 +13,17 @@
 	opacity: 0.7;
 }
 
-.loading {
+.ast__loading {
 	text-align: center;
 	padding: 40px;
 
-	.loading__spinner {
+	.ast__loading-spinner {
 		float: none;
 		margin: 0 auto 10px;
 		display: block;
 	}
 }
 
-.is-hidden {
+.ast__is-hidden {
 	display: none;
 }

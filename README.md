@@ -160,7 +160,7 @@ add_action( 'plugins_loaded', function() {
 
 ### 3. Инициализация с объектами Табов
 
-Если класс вклада реализует интерфейсы/методы get_sections(), get_label() и has_save_button(), SettingsManager
+Если класс вклада реализует интерфейсы/методы get_sections (), get_label () и has_save_button (), SettingsManager
 нормализует его автоматически.
 
 ```php
@@ -338,8 +338,8 @@ use Art\Settings\Fields\ColorPicker;
 ### Repeater
 
 Повторяющиеся строки вложенных полей. Кнопка «Добавить» доступна сверху и снизу, строкам присваивается
-`row_label` с порядковым номером. Под-поля раскладываются CSS Grid и переносятся на новые линии при нехватке
-ширины (корректно работает даже в узкой ячейке `form-table`).
+`row_label` с порядковым номером. Под-поля раскладываются CSS Grid и переносятся на новые линии при нехватке ширины
+(корректно работает даже в узкой ячейке `form-table`).
 
 ```php
 use Art\Settings\Fields\Repeater;
@@ -595,7 +595,6 @@ my-plugin/
 Все отсутствующие шаблоны автоматически подгрузятся из каталога `vendor/art/settings/templates`.
 
 ---
-
 ## SCSS-кит дашборда (dashboard kit)
 
 Общие элементы интерфейса дашборда, которые раньше копировались в каждый плагин
@@ -603,23 +602,29 @@ my-plugin/
 со статусом, карточки, метрики, стадии пайплайна, бейджи, пагинация, debug-панель,
 info-карточки.
 
+> Полный справочник классов и правила применения — в
+> [docs/ui-kit.md](docs/ui-kit.md).
+
 ### Исходники
 
 Модули лежат в `src/scss/dashboard/`:
 
-| Модуль | Что содержит |
-|--------|-------------|
+| Модуль              | Что содержит                                                                                                            |
+|---------------------|-------------------------------------------------------------------------------------------------------------------------|
 | `variables` | Палитра `$color-*`, `$status-*`, `$breakpoint-*`, WP-палитра `$wp-*` |
-| `base` | `@keyframes htmx-btn-spin`, `.htmx-indicator`, `.loading`, `.is-hidden` |
-| `blocks/controls` | `.scan-controls` (тулбар + статус-точка + пульс), `.btn-global-start/stop` |
-| `blocks/card` | `.scan-card`, `.scan-empty`, `.scan-legend` |
-| `blocks/stats` | `.stat-grid`, `.stat-card` (variants `--success/--skip/--total/--link/--cta`) |
-| `blocks/pipeline` | `.scan-pipeline`, `.stage` |
-| `blocks/badge` | `.mode-badge` |
-| `blocks/pagination` | `.pagination` |
-| `blocks/debug` | `.debug-panel`, `.debug-card`, debug-кнопки |
-| `blocks/info` | `.info-card` |
-| `blocks/table` | `.table-bar` (тулбар), `.table-wrap` (скролл + отступ), `.table-data[--fixed]`, `.journal` |
+| `base` | `@keyframes` (`htmx-btn-spin`, `loading-pulse`, `shake`), `.htmx-indicator`, `.ast__loading`, `.ast__is-hidden` |
+| `blocks/controls` | `.ast__controls` (тулбар + статус-точка + пульс), `.ast__btn-start/stop` |
+| `blocks/card` | `.ast__card`, `.ast__empty`, `.ast__legend` |
+| `blocks/stats` | `.ast__stat-grid`, `.ast__stat-card` (variants `--success/--skip/--total/--link/--cta`) |
+| `blocks/pipeline` | `.ast__pipeline`, `.ast__stage` |
+| `blocks/badge` | `.ast__badge` |
+| `blocks/pagination` | `.ast__pagination` |
+| `blocks/debug` | `.ast__debug`, `.ast__debug-card`, debug-кнопки |
+| `blocks/info` | `.ast__info` |
+| `blocks/table` | `.ast__table-bar` (тулбар), `.ast__table-wrap` (скролл + отступ), `.ast__table-data[--fixed]`, `.ast__journal` |
+| `blocks/filters` | `.ast__filter-panel`, `.ast__filter-grid`, `.ast__filter-field`, `.ast__range` (двойной слайдер min/max) |
+| `blocks/alert` | `.ast__alert--info/--warning/--error` (цветные инфо-блоки) |
+| `blocks/progress` | `.ast__progress`, `.ast__progress-bar` (прогресс-бар) |
 
 ### Подключение через SCSS-исходники
 
@@ -628,8 +633,18 @@ info-карточки.
 
 ```js
 // webpack.config.js
-{ loader: 'sass-loader', options: { implementation: require( 'sass' ),
-  sassOptions: { includePaths: [ path.resolve( __dirname, 'vendor/art/settings/src/scss' ) ] } } }
+{
+	loader: 'sass-loader', options
+:
+	{
+		implementation: require( 'sass' ),
+			sassOptions
+	:
+		{
+			includePaths: [ path.resolve( __dirname, 'vendor/art/settings/src/scss' ) ]
+		}
+	}
+}
 ```
 
 ```scss
@@ -646,40 +661,64 @@ info-карточки.
 @use "blocks/plugin-specific";
 ```
 
+### Стандарт классов
+
+Все классы либы имеют префикс `ast` и строятся по BEM: блок `ast__<block>`,
+элемент `ast__<block>-<element>`, модификатор `--<modifier>`
+(например `.ast__controls`, `.ast__stat-card-label`, `.ast__alert--warning`).
+Исключение — системные классы HTMX (`.htmx-indicator`, `.htmx-request`), их имя
+задаёт сам htmx. Общие keyframes (`htmx-btn-spin`, `loading-pulse`, `shake`)
+лежат в `src/scss/keyframes.scss` и подключаются и в `ast-admin-style`, и в кит:
+дополнительно их определять в плагинах не нужно.
+
 Если нужно переопределить переменные — используйте `@use "dashboard/variables" with (...)`.
 
 ### Готовый CSS
 
 Для плагинов, которые не собирают свои стили, собирается пребилт
-`assets/css/ast-dashboard-style.min.css` (webpack entry `ast-dashboard-style`).
-Подключить его можно, например, в `admin_enqueue_scripts` страницы настроек.
+`assets/css/ast-dashboard-style.min.css` (webpack entry `ast-dashboard-style`). Подключить его можно, например, в
+`admin_enqueue_scripts` страницы настроек.
 
 ---
 
 ## Changelog
 
+### 2.0.0
+
+* Единый стандарт классов: всё в `ast__<block>[-<element>][--<modifier>]`.
+  Dashboard-кит переименован (`scan-*`/`stat-*`/`pagination`/`table-*`/`filter-*`/`range`/
+  `alert`/`progress`/`journal` → `ast__*`); `skl-title-uniq` переведён на новые имена.
+* Убраны осиротевшие классы-копии из product-feed (`.section-settings`, `.mapping-*`,
+  `.status-indicator`, `.settings-wrapper`, `.accordion-item`, `.js-spoiler-*` и т.п.);
+  удалён `blocks/_status.scss`. Свитч переведён на `.ast__switch`/`.ast__slider`
+  (`templates/fields/toggle.php` — ломающее изменение разметки).
+* Новый модуль `src/scss/keyframes.scss` (`htmx-btn-spin`, `loading-pulse`, `shake`) —
+  keyframes подключены и в `ast-admin-style`, и в кит; в плагинах больше не нужны.
+* Добавлены `blocks/_filters.scss`, `blocks/_alert.scss`, `blocks/_progress.scss`.
+* Справочник классов и правил — `docs/ui-kit.md`.
+
 ### 1.7.0
 
 * Табличный блок дашборда `blocks/table`: `.table-bar` (тулбар над таблицей),
   `.table-wrap` (скролл-обёртка + отступ после таблицы), `.table-data` / `.table-data--fixed`
-  (широкая таблица с `vertical-align: top`), `.journal` / `.journal__title` (заголовок + таблица).
-  Устраняет дубли из `skl-dedup-scan`, `skl-title-uniq`, `skl-core` (`.journal-bar`, `.purge-actions`,
+  (широкая таблица с `vertical-align: top`), `.journal` / `.journal__title` (заголовок + таблица). Устраняет дубли из
+  `skl-dedup-scan`, `skl-title-uniq`, `skl-core` (`.journal-bar`, `.purge-actions`,
   `.bulk-bar`, `.group-table-wrap`, `.sklc-hygiene__scroll`, `.group-table`, `.skltu-journal` и т.д.).
 
 ### 1.6.0
 
 * Новый SCSS-кит дашборда `src/scss/dashboard/`: палитра (`variables`), HTMX-база (`base`) и блоки
-  `controls/card/stats/pipeline/badge/pagination/debug/info` — общие элементы, которые раньше копировались
-  в каждый плагин (`skl-dedup-scan`, `skl-title-uniq`, `skl-product-feed`).
+  `controls/card/stats/pipeline/badge/pagination/debug/info` — общие элементы, которые раньше копировались в каждый
+  плагин (`skl-dedup-scan`, `skl-title-uniq`, `skl-product-feed`).
 * Подключение через `@use "dashboard/..."` (в sass-loader добавить `includePaths` на
   `vendor/art/settings/src/scss`); пребилт — новый webpack entry `ast-dashboard-style`
   (`assets/css/ast-dashboard-style.min.css`).
 
 ### 1.5.3
 
-* Репитер: под-поля обёрнуты в `.ast__repeater-fields` (CSS Grid `auto-fill minmax(180px, 1fr)`) — поля не
-  сжимаются ниже 180px и переносятся на новые линии при нехватке ширины (корректно в узкой ячейке `form-table`,
-  2/3/5 полей в строке).
+* Репитер: под-поля обёрнуты в `.ast__repeater-fields` (CSS Grid `auto-fill minmax(180px, 1fr)`) — поля не сжимаются
+  ниже 180px и переносятся на новые линии при нехватке ширины (корректно в узкой ячейке `form-table`, 2/3/5 полей в
+  строке).
 * Контролам в строке репитера задан `max-width: 100%`; кнопка удаления прижата вправо.
 
 ### 1.5.2
@@ -693,8 +732,8 @@ info-карточки.
 ### 1.5.1
 
 * Репитер: кнопка «Добавить» продублирована сверху и снизу строк.
-* Лейбл строки (`row_label`) копируется при добавлении: в шаблонной строке рендерится `#__INDEX__`, JS
-  перенумеровывает его в `#N`.
+* Лейбл строки (`row_label`) копируется при добавлении: в шаблонной строке рендерится `#__INDEX__`, JS перенумеровывает
+  его в `#N`.
 * Стили строк: поля растягиваются на всю ширину, лейбл над инпутом (меньший размер шрифта).
 * `RepeaterRenderTest` — юнит-покрытие рендера (кнопки, лейбл, обёртки).
 
@@ -707,16 +746,17 @@ info-карточки.
 * Интеграция HTMX: webpack-бандл `ast-admin-htmx`, общий диспетчер HTMX-колбеков.
 
 ### 1.4.1
+
 * дополнительные колнки для вкладок
 
 ### 1.4.0
 
 * Перемещение подменю после регистрации: `menu.position` в конфиге теперь (кроме передачи в
   `add_submenu_page`/`add_menu_page`) сортирует пункт в `$submenu` на хуке `admin_menu` с приоритетом `PHP_INT_MAX`:
-  * `'first'` — пункт в начало списка подменю;
-  * `'last'` — пункт в конец (переживает подменю, добавленные другими плагинами позже в том же хуке);
-  * `int >= 0` — пункт вставляется на конкретный индекс;
-  * `null`/отсутствие ключа — без изменений (обратная совместимость).
+    * `'first'` — пункт в начало списка подменю;
+    * `'last'` — пункт в конец (переживает подменю, добавленные другими плагинами позже в том же хуке);
+    * `int >= 0` — пункт вставляется на конкретный индекс;
+    * `null`/отсутствие ключа — без изменений (обратная совместимость).
 * Только числовые позиции передаются в `add_submenu_page`/`add_menu_page`; строки (`'first'`/`'last'`) передаются как
   `null`, чтобы не провоцировать `_doing_it_wrong` — реордер выполняется на `admin_menu` `PHP_INT_MAX`.
 * `SettingsManager` работает с `global $submenu` напрямую; отдельный `admin_menu` хук с

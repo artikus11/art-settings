@@ -1,6 +1,6 @@
 @use "../variables" as *;
 
-.pagination {
+.ast__pagination {
 	display: flex;
 	flex-wrap: wrap;
 	gap: 4px;
@@ -9,8 +9,8 @@
 		margin-bottom: 12px;
 	}
 
-	&__gap,
-	&__meta {
+	&-gap,
+	&-meta {
 		align-self: center;
 		padding: 0 6px;
 		color: $wp-text-muted;

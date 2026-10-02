@@ -1,12 +1,12 @@
 @use "../variables" as *;
 
-@keyframes scan-status-pulse {
+@keyframes ast-status-pulse {
 	0% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.4); }
 	70% { box-shadow: 0 0 0 6px rgba(22, 163, 74, 0); }
 	100% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0); }
 }
 
-.scan-controls {
+.ast__controls {
 	background: $color-bg-card;
 	border: 1px solid $color-border-light;
 	border-radius: 3px;
@@ -22,19 +22,19 @@
 		gap: 16px;
 	}
 
-	&__info {
+	&-info {
 		display: flex;
 		align-items: center;
 		gap: 16px;
 	}
 
-	&__text {
+	&-text {
 		display: flex;
 		flex-direction: column;
 		gap: 2px;
 	}
 
-	&__status {
+	&-status {
 		width: 12px;
 		height: 12px;
 		border-radius: 50%;
@@ -42,7 +42,7 @@
 
 		&--running {
 			background: #16a34a;
-			animation: scan-status-pulse 1.8s infinite;
+			animation: ast-status-pulse 1.8s infinite;
 		}
 
 		&--stopped {
@@ -50,19 +50,19 @@
 		}
 	}
 
-	&__title {
+	&-title {
 		font-size: 14px;
 		font-weight: 600;
 		color: $color-text-dark;
 	}
 
-	&__desc {
+	&-desc {
 		font-size: 12px;
 		color: $color-text-muted;
 		max-width: 640px;
 	}
 
-	&__actions .button {
+	&-actions .button {
 		height: auto;
 		padding: 8px 18px;
 		font-weight: 600;
@@ -81,7 +81,7 @@
 	}
 }
 
-.btn-global-start {
+.ast__btn-start {
 	background: #16a34a !important;
 	border-color: #15803d !important;
 	color: #ffffff !important;
@@ -93,7 +93,7 @@
 	}
 }
 
-.btn-global-stop {
+.ast__btn-stop {
 	background: #ffffff !important;
 	border-color: #dc2626 !important;
 	color: #dc2626 !important;

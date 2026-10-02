@@ -1,0 +1,19 @@
+@use "../variables" as *;
+
+.ast__progress {
+	margin-top: 8px;
+
+	&-bar {
+		background: $wp-bg-soft;
+		border-radius: 999px;
+		height: 8px;
+		overflow: hidden;
+
+		span {
+			display: block;
+			height: 100%;
+			background: $status-processing;
+			transition: width 0.3s ease;
+		}
+	}
+}

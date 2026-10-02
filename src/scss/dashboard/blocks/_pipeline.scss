@@ -1,12 +1,12 @@
 @use "../variables" as *;
 
-@keyframes scan-pulse {
+@keyframes ast-pulse {
 	0% { opacity: 1; }
 	50% { opacity: 0.7; }
 	100% { opacity: 1; }
 }
 
-.scan-pipeline {
+.ast__pipeline {
 	display: grid;
 	grid-template-columns: repeat(3, minmax(0, 1fr));
 	gap: 16px;
@@ -16,7 +16,7 @@
 	}
 }
 
-.stage {
+.ast__stage {
 	background: $color-bg-main;
 	border: 1px solid $color-border-light;
 	border-radius: 3px;
@@ -32,33 +32,33 @@
 		box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.08);
 	}
 
-	&__number {
+	&-number {
 		font-size: 10px;
 		font-weight: 700;
 		color: #94a3b8;
 		text-transform: uppercase;
 	}
 
-	&__name {
+	&-name {
 		font-size: 13px;
 		font-weight: 600;
 	}
 
-	&__skip-hint {
+	&-skip-hint {
 		margin: 8px 0 0;
 		font-size: 11px;
 		line-height: 1.4;
 		color: $color-text-muted;
 	}
 
-	&__progress {
+	&-progress {
 		height: 6px;
 		background: $color-border-light;
 		border-radius: 3px;
 		overflow: hidden;
 		margin: 10px 0 4px;
 
-		.stage__progress-bar {
+		.ast__stage-progress-bar {
 			display: block;
 			height: 100%;
 			background: $status-processing;
@@ -67,7 +67,7 @@
 		}
 	}
 
-	&__metric {
+	&-metric {
 		display: flex;
 		justify-content: space-between;
 		padding: 4px 8px;
@@ -77,7 +77,7 @@
 
 		&--pulse {
 			background: #dbeafe;
-			animation: scan-pulse 2s infinite;
+			animation: ast-pulse 2s infinite;
 		}
 
 		&--has-errors {

@@ -1,6 +1,6 @@
 @use "../variables" as *;
 
-.table-bar {
+.ast__table-bar {
 	display: flex;
 	flex-wrap: wrap;
 	gap: 8px;
@@ -8,14 +8,14 @@
 	margin: 0 0 12px;
 }
 
-.table-wrap {
+.ast__table-wrap {
 	overflow-x: auto;
 	max-width: 100%;
 	-webkit-overflow-scrolling: touch;
 	margin: 0 0 12px;
 }
 
-.table-data {
+.ast__table-data {
 	width: 100%;
 
 	th,
@@ -28,10 +28,10 @@
 	}
 }
 
-.journal {
+.ast__journal {
 	margin: 20px 0 0;
 
-	&__title {
+	&-title {
 		font-size: 15px;
 		font-weight: 600;
 		margin: 0 0 12px;
