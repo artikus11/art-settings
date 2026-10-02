@@ -658,6 +658,14 @@ info-карточки.
 
 ## Changelog
 
+### 1.7.0
+
+* Табличный блок дашборда `blocks/table`: `.table-bar` (тулбар над таблицей),
+  `.table-wrap` (скролл-обёртка + отступ после таблицы), `.table-data` / `.table-data--fixed`
+  (широкая таблица с `vertical-align: top`), `.journal` / `.journal__title` (заголовок + таблица).
+  Устраняет дубли из `skl-dedup-scan`, `skl-title-uniq`, `skl-core` (`.journal-bar`, `.purge-actions`,
+  `.bulk-bar`, `.group-table-wrap`, `.sklc-hygiene__scroll`, `.group-table`, `.skltu-journal` и т.д.).
+
 ### 1.6.0
 
 * Новый SCSS-кит дашборда `src/scss/dashboard/`: палитра (`variables`), HTMX-база (`base`) и блоки
