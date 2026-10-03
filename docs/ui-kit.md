@@ -156,7 +156,35 @@ sassOptions: {
 | `.ast__alert--info/--warning/--error`   | Цветные уведомления                                              |
 | `.ast__progress` / `.ast__progress-bar` | Прогресс-бар                                                     |
 | `.ast__info`                            | Информационная страница                                          |
-| `.ast__debug`                           | Отладочная панель (`-warning`, `-grid`, `-tools`, `-actions`, …) |
+
+### Отладка
+
+| Класс                                  | Назначение                                                    |
+|----------------------------------------|---------------------------------------------------------------|
+| `.ast__debug`                          | Корень вкладки «Отладка»                                      |
+| `.ast__debug-warning`                  | Жёлтое предупреждение вверху                                  |
+| `.ast__debug-grid`                     | Сетка стадий (3 колонки)                                      |
+| `.ast__debug-card` / `-card-step`      | Карточка стадии + номер шага                                  |
+| `.ast__debug-divider` / `-action-divider` | Разделитель блоков / внутри ряда кнопок                    |
+| `.ast__debug-tools`                    | Сетка 1fr/3fr: ссылки слева, сброс справа                     |
+| `.ast__debug-links` / `-links-list`    | Блок «Быстрый переход»                                        |
+| `.ast__debug-reset` / `-reset-desc`    | Колонка «Сервисное обслуживание и сброс»                      |
+| `.ast__debug-actions`                  | Ряд кнопок (wrap)                                             |
+
+Кнопки отладки:
+
+| Класс                                | Назначение                                              |
+|--------------------------------------|---------------------------------------------------------|
+| `.ast__debug-button--run`            | Запуск стадии (на карточке в `-grid`)                   |
+| `.ast__debug-button--danger`         | Мягкая деструктивная кнопка (сброс одной области)       |
+| `.ast__debug-button--reset`          | Полный сброс (красная)                                  |
+
+Правила:
+- Каждый деструктивный action — только с `hx-confirm`.
+- Стадии рендерятся карточками в `ast__debug-grid`, не списком.
+- Кнопки сброса группируются в `ast__debug-actions`; между логическими
+  группами — `ast__debug-action-divider`.
+- Блоки разделяются `<hr class="ast__debug-divider">`.
 
 ---
 
@@ -204,7 +232,73 @@ sassOptions: {
 
 ---
 
-## 6. Что НЕ трогать
+## 6. Пример вкладки «Отладка»
+
+```html
+<div class="ast__debug">
+	<div class="ast__debug-warning">
+		Кнопки ниже ставят стадию в Action Scheduler. Если скан уже завершён,
+		он будет снова переведён в running.
+	</div>
+
+	<div class="ast__debug-grid">
+		<div class="ast__debug-card">
+			<span class="ast__debug-card-step">Шаг 1</span>
+			<button type="button"
+				class="button ast__debug-button--run"
+				hx-post="https://site/wp-admin/admin-ajax.php"
+				hx-vals='{"action":"debug_run_stage","stage":"normalize","nonce":"…"}'
+				hx-target="#notices"
+				hx-swap="none">
+				Запустить<br> «Нормализация»
+			</button>
+		</div>
+	</div>
+
+	<hr class="ast__debug-divider">
+
+	<div class="ast__debug-tools">
+		<div class="ast__debug-links">
+			<h4>Быстрый переход</h4>
+			<ul class="ast__debug-links-list">
+				<li>
+					<a href="https://site/wp-admin/admin.php?page=wc-status&tab=action-scheduler"
+						target="_blank"
+						class="dashicons-before dashicons-list-view">
+						Просмотр крон-задач
+					</a>
+				</li>
+			</ul>
+		</div>
+
+		<div class="ast__debug-reset">
+			<h4>Сервисное обслуживание и сброс</h4>
+			<p class="ast__debug-reset-desc">
+				Выберите область очистки. Действия необратимы.
+			</p>
+			<div class="ast__debug-actions">
+				<button type="button"
+					class="button button-secondary ast__debug-button--danger"
+					hx-post="https://site/wp-admin/admin-ajax.php"
+					hx-confirm="Очистить данные сканов?">
+					Очистить метрики
+				</button>
+				<hr class="ast__debug-divider ast__debug-action-divider">
+				<button type="button"
+					class="button-link-delete ast__debug-button--reset"
+					hx-post="https://site/wp-admin/admin-ajax.php"
+					hx-confirm="ВНИМАНИЕ! Очистить всё. Продолжить?">
+					ПОЛНЫЙ СБРОС
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
+```
+
+---
+
+## 7. Что НЕ трогать
 
 - Классы плагинов с собственным префиксом (`skl-*`, `dedup-*`, `sklpf-*`)
   — они остаются в плагине, пока плагин не переведён на кит.

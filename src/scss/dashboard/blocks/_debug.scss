@@ -69,6 +69,12 @@
 		}
 	}
 
+	// Колонка «Сервисное обслуживание» — второй столбец grid-раскладки &-tools.
+	&-reset {
+		display: flex;
+		flex-direction: column;
+	}
+
 	&-reset-desc {
 		font-size: 12px;
 		color: $color-text-muted;
