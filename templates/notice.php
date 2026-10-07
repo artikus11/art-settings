@@ -2,11 +2,20 @@
 /**
  * @var string $message
  * @var string $type success|error|warning|info
+ * @var array  $args
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
+
+$type = $type ?? 'success';
+$args = wp_parse_args( $args ?? [], [
+	'strong'      => true,
+	'dismissible' => true,
+	'oob_target'  => '',
+	'allow_html'  => false,
+] );
 
 $type_class = match ( $type ) {
 	'error'   => 'notice-error',
@@ -14,8 +23,25 @@ $type_class = match ( $type ) {
 	'info'    => 'notice-info',
 	default   => 'notice-success',
 };
+
+$notice_class = 'notice ' . $type_class;
+
+if ( $args['dismissible'] ) {
+	$notice_class .= ' is-dismissible';
+}
+
+$notice_class .= ' ast__notice ast__notice--' . $type;
+
+$message_html = $args['allow_html'] ? wp_kses_post( $message ) : esc_html( $message );
+
+$message_content = $args['strong'] ? '<strong>' . $message_html . '</strong>' : $message_html;
 ?>
 
-<div class="notice <?php echo esc_attr( $type_class ); ?> is-dismissible ast__notice ast__notice--<?php echo esc_attr( $type ); ?>">
-	<p><strong><?php echo esc_html( $message ); ?></strong></p>
+<div class="<?php echo esc_attr( $notice_class ); ?>"<?php echo $args['oob_target'] ? ' hx-swap-oob="afterbegin:' . esc_attr( $args['oob_target'] ) . '"' : ''; ?>>
+	<p><?php echo wp_kses_post( $message_content ); ?></p>
+	<?php if ( $args['dismissible'] ) : ?>
+		<button type="button" class="notice-dismiss">
+			<span class="screen-reader-text"><?php echo esc_html( 'Скрыть уведомление' ); ?></span>
+		</button>
+	<?php endif; ?>
 </div>

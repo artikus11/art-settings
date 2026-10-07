@@ -190,6 +190,32 @@ $renderer->render_template( 'parts/skeleton.php', [
 ] );
 ```
 
+### Уведомления
+
+Единый рендер нотисов — `Art\Settings\Helpers\Notice::html()`. Заменяет собственные копии `View::notice()` в
+плагинах: контракт поверх `templates/notice.php` (классы `ast__notice`, `notice-*`, `is-dismissible`).
+
+```php
+use Art\Settings\Helpers\Notice;
+
+echo Notice::html( 'Товары синхронизированы.' );                                  // success (по умолчанию)
+echo Notice::html( 'Не удалось сохранить.', 'error', [ 'dismissible' => false ] );
+echo Notice::html( "Строка 1\nСтрока 2", 'warning', [ 'allow_html' => true ] );    // многострочные, nl2br
+echo Notice::html( 'Загружено', 'info', [ 'oob_target' => '#notices' ] );          // HTMX OOB
+```
+
+| Параметр | Тип | Default | Назначение |
+|----------|-----|---------|------------|
+| `$message` | `string` | — | Текст сообщения |
+| `$type` | `string` | `success` | `success\|error\|warning\|info` → класс-модификатор |
+| `$args['strong']` | `bool` | `true` | Оборачивать сообщение в `<strong>` |
+| `$args['dismissible']` | `bool` | `true` | Кнопка закрытия `.notice-dismiss` + класс `is-dismissible` |
+| `$args['oob_target']` | `string` | `''` | Атрибут `hx-swap-oob="afterbegin:<target>"` для HTMX OOB |
+| `$args['allow_html']` | `bool` | `false` | Пропустить сообщение через `wp_kses_post` (многострочные `nl2br`) |
+
+По умолчанию сообщение экранируется (`esc_html`). Кастомный шаблон подхватывается через фильтр
+`art_settings_template_path` с фолбэком на шаблон либы.
+
 ### Отладка
 
 | Класс                                  | Назначение                                                    |
