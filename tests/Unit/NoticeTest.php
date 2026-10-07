@@ -93,6 +93,27 @@ class NoticeTest extends TestCase {
 	}
 
 
+	public function test_oob_target_keeps_notice_wrapper_inside_oob_container(): void {
+
+		$html = Notice::html( 'Сообщение', 'success', [ 'oob_target' => '#notices' ] );
+
+		// htmx при afterbegin вставляет СОДЕРЖИМОЕ oob-элемента, а не сам элемент:
+		// классы теряются, если hx-swap-oob стоит на самом .notice. Обёртка-контейнер
+		// должна нести атрибут, а .notice — оставаться её содержимым.
+		$this->assertStringContainsString( '<div hx-swap-oob="afterbegin:#notices">', $html );
+
+		$this->assertStringNotContainsString(
+			'<div class="notice notice-success is-dismissible ast__notice ast__notice--success" hx-swap-oob',
+			$html
+		);
+
+		$this->assertMatchesRegularExpression(
+			'~<div hx-swap-oob="afterbegin:#notices">\s*<div class="notice notice-success is-dismissible ast__notice ast__notice--success">~',
+			$html
+		);
+	}
+
+
 	public function test_message_is_escaped_by_default(): void {
 
 		$html = Notice::html( '<b>жирный</b> & текст', 'success' );

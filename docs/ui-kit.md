@@ -210,7 +210,7 @@ echo Notice::html( 'Загружено', 'info', [ 'oob_target' => '#notices' ] 
 | `$type` | `string` | `success` | `success\|error\|warning\|info` → класс-модификатор |
 | `$args['strong']` | `bool` | `true` | Оборачивать сообщение в `<strong>` |
 | `$args['dismissible']` | `bool` | `true` | Кнопка закрытия `.notice-dismiss` + класс `is-dismissible` |
-| `$args['oob_target']` | `string` | `''` | Атрибут `hx-swap-oob="afterbegin:<target>"` для HTMX OOB |
+| `$args['oob_target']` | `string` | `''` | HTMX OOB: атрибут `hx-swap-oob="afterbegin:<target>"` на обёртке; сам `.notice` вставляется целиком с классами (htmx при `afterbegin` берёт содержимое oob-элемента, поэтому атрибут не должен стоять на `.notice`) |
 | `$args['allow_html']` | `bool` | `false` | Пропустить сообщение через `wp_kses_post` (многострочные `nl2br`) |
 
 По умолчанию сообщение экранируется (`esc_html`). Кастомный шаблон подхватывается через фильтр

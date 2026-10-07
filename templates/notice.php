@@ -37,11 +37,17 @@ $message_html = $args['allow_html'] ? wp_kses_post( $message ) : esc_html( $mess
 $message_content = $args['strong'] ? '<strong>' . $message_html . '</strong>' : $message_html;
 ?>
 
-<div class="<?php echo esc_attr( $notice_class ); ?>"<?php echo $args['oob_target'] ? ' hx-swap-oob="afterbegin:' . esc_attr( $args['oob_target'] ) . '"' : ''; ?>>
-	<p><?php echo wp_kses_post( $message_content ); ?></p>
-	<?php if ( $args['dismissible'] ) : ?>
-		<button type="button" class="notice-dismiss">
-			<span class="screen-reader-text"><?php echo esc_html( 'Скрыть уведомление' ); ?></span>
-		</button>
-	<?php endif; ?>
-</div>
+<?php if ( $args['oob_target'] ) : ?>
+	<div hx-swap-oob="afterbegin:<?php echo esc_attr( $args['oob_target'] ); ?>">
+<?php endif; ?>
+	<div class="<?php echo esc_attr( $notice_class ); ?>">
+		<p><?php echo wp_kses_post( $message_content ); ?></p>
+		<?php if ( $args['dismissible'] ) : ?>
+			<button type="button" class="notice-dismiss">
+				<span class="screen-reader-text"><?php echo esc_html( 'Скрыть уведомление' ); ?></span>
+			</button>
+		<?php endif; ?>
+	</div>
+<?php if ( $args['oob_target'] ) : ?>
+	</div>
+<?php endif; ?>
