@@ -683,6 +683,17 @@ info-карточки.
 
 ## Changelog
 
+### 2.1.0
+
+* Скелетон загрузки: блок `src/scss/dashboard/blocks/_skeleton.scss` (`.ast__skeleton*`, keyframe
+  `shimmer-animation` в `src/scss/keyframes.scss`) и параметризованный партиал
+  `templates/parts/skeleton.php` (`rows`, `with_number`, `id`, `class`).
+* Модификатор `.ast__badge--bootstrap` (WP-палитра orange, импорт товара).
+* Модификатор `.ast__stage-metric--bold` — выделение всей строки метрики без фона (label/value — голые span'ы).
+* Хелпер `Art\Settings\Helpers\Notice::html()` — единый рендер нотисов поверх `templates/notice.php`
+  (аргументы `strong`, `dismissible`, `oob_target`, `allow_html`); в `notice.php` добавлена кнопка закрытия
+  `.notice-dismiss`.
+
 ### 2.0.0
 
 * Единый стандарт классов: всё в `ast__<block>[-<element>][--<modifier>]`.

@@ -16,6 +16,28 @@
 
 ## 2. Завершённые задачи (Текущий этап)
 
+### 2.1.0 — скелетон, модификаторы badge/stage-metric, единый рендер нотисов (2026-10-07)
+
+* [x] **Скелетон загрузки в либе:** новый блок `blocks/_skeleton.scss` (`.ast__skeleton`, `.ast__skeleton-row`,
+  `.ast__skeleton-cell--text/--input/--number`, модификаторы `--title/--icon/--button`) и keyframe
+  `shimmer-animation` в `src/scss/keyframes.scss`. Параметризованный партиал `templates/parts/skeleton.php`
+  (`rows` default 5, `with_number` default false, `id`, `class`) — переиспользуется между плагинами вместо
+  дублей (inline-скелетон feed, осиротевший `templates/parts/skeleton.php`).
+* [x] **Модификатор `.ast__badge--bootstrap`:** перенос из плагинного `sklpf-badge--bootstrap`, цвета WP-палитры
+  orange, граница как в `ast__alert`.
+* [x] **Модификатор `.ast__stage-metric--bold`:** `font-weight: 700` на всей строке метрики (канон dedup-scan), без
+  фона; элементные классы `-label/-value` в либу не вводились.
+* [x] **Единый рендер нотисов:** `Art\Settings\Helpers\Notice::html()` поверх `templates/notice.php` с аргументами
+  `strong`, `dismissible` (кнопка `.notice-dismiss`, которой не хватало в шаблоне), `oob_target`
+  (`hx-swap-oob="afterbegin:..."`), `allow_html` (`wp_kses_post`). Кастомный шаблон через фильтр
+  `art_settings_template_path` + фолбэк на шаблон либы.
+* [x] **Тесты:** `tests/Unit/NoticeTest.php` (тип→класс, dismissible, oob_target, экранирование, allow_html, strong,
+  обратная совместимость с notice.php) — весь набор 48 тестов / 114 ассертов, зелёный.
+* [x] **Docs:** `docs/ui-kit.md` — «Скелетоны», `--bootstrap`, `--bold` (+ примечание про голые span'ы),
+  «Уведомления» (контракт `Notice::html()`); README changelog 2.1.0.
+* [x] **Prebuilt:** `assets/css/ast-dashboard-style.min.css` пересобран — содержит `.ast__skeleton*`,
+  `.ast__badge--bootstrap`, `.ast__stage-metric--bold`, `shimmer-animation`.
+
 ### 1.4.0 — перемещение подменю через `menu.position`
 
 * [x] **Гарантированная позиция подменю после всех регистраций:** `SettingsManager::init()` вешает второй
