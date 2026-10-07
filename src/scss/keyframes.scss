@@ -29,3 +29,12 @@
 		transform: translate3d(2px, 0, 0);
 	}
 }
+
+@keyframes shimmer-animation {
+	0% {
+		background-position: -200% 0;
+	}
+	100% {
+		background-position: 200% 0;
+	}
+}

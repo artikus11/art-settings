@@ -1,0 +1,56 @@
+@use "../variables" as *;
+
+.ast__skeleton {
+	background: linear-gradient(110deg, $skeleton-base 8%, $skeleton-shimmer 18%, $skeleton-base 33%);
+	background-size: 200% 100%;
+	animation: shimmer-animation 1.5s infinite linear;
+	border-radius: 4px;
+	height: 30px;
+
+	&--title {
+		width: 200px;
+		height: 24px;
+	}
+
+	&--icon {
+		width: 20px;
+		height: 20px;
+	}
+
+	&--button {
+		width: 100px;
+		height: 35px;
+	}
+
+	&-row {
+		display: flex;
+		gap: 20px;
+		margin-bottom: 15px;
+	}
+
+	&-cell {
+		&--text,
+		&--input {
+			height: 30px;
+			flex: 1;
+		}
+
+		&--number {
+			flex: 0 0 30px;
+		}
+	}
+}
+
+.ast__skeleton-modal {
+	&-header {
+		display: flex;
+		align-items: center;
+		gap: 20px;
+		margin-bottom: 15px;
+	}
+
+	&-footer {
+		display: flex;
+		justify-content: flex-end;
+	}
+}

@@ -157,6 +157,33 @@ sassOptions: {
 | `.ast__progress` / `.ast__progress-bar` | Прогресс-бар                                                     |
 | `.ast__info`                            | Информационная страница                                          |
 
+### Скелетоны
+
+| Класс                                              | Назначение                                                          |
+|----------------------------------------------------|---------------------------------------------------------------------|
+| `.ast__skeleton`                                   | Shimmer-база заглушки (градиент + анимация + скругление)            |
+| `.ast__skeleton--title` / `--icon` / `--button`    | Заглушки шапки/футера: 200×24 / 20×20 / 100×35                      |
+| `.ast__skeleton-row`                               | Строка тела (`flex`, `gap: 20px`)                                   |
+| `.ast__skeleton-cell--text` / `--input`            | Широкие ячейки строки (`flex: 1`, высота 30px)                      |
+| `.ast__skeleton-cell--number`                      | Узкая ячейка номера (`flex: 0 0 30px`)                              |
+| `.ast__skeleton-modal` / `-header` / `-footer`     | Структура партиала `templates/parts/skeleton.php`                   |
+
+Партиал `templates/parts/skeleton.php` (параметры `rows` default 5, `with_number` default false, `id`,
+`class`) рендерит только «строки с ячейками» — оверлей HTMX (`.htmx-request`) и модальная обёртка остаются зоной
+плагина. Keyframe `shimmer-animation` определён в либе (`src/scss/keyframes.scss`) — повторно не объявлять.
+
+Пример использования с `hx-indicator` (паттерн feed):
+
+```php
+// В кастомном шаблоне плагина, через PageRenderer::render_template()
+$renderer->render_template( 'parts/skeleton.php', [
+    'rows'        => 15,
+    'with_number' => true,
+    'id'          => 'sklpf-mapping-skeleton',
+    'class'       => 'htmx-indicator',
+] );
+```
+
 ### Отладка
 
 | Класс                                  | Назначение                                                    |
