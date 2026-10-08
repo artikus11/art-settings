@@ -683,6 +683,14 @@ info-карточки.
 
 ## Changelog
 
+### 2.2.0
+
+* Универсальный скелетон: партиал `templates/parts/skeleton.php` рендерит внешнюю обёртку (root — зона оверлея
+  плагина) и внутреннюю «карточку» `.ast__skeleton-card`; классы модалки плагина больше не накладываются на элементы
+  тела. Новые параметры `variant` (default `modal-rows`), `card` (default true), `class_card`; варианты регистрируются
+  фильтром `art_settings_skeleton_variants` (slug => путь к шаблону). Встроены варианты `modal-rows` и `rows`
+  (`templates/parts/skeleton/`).
+
 ### 2.1.0
 
 * Скелетон загрузки: блок `src/scss/dashboard/blocks/_skeleton.scss` (`.ast__skeleton*`, keyframe
