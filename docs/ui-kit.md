@@ -172,22 +172,42 @@ sassOptions: {
 | `.ast__skeleton-row`                               | Строка тела (`flex`, `gap: 20px`)                                   |
 | `.ast__skeleton-cell--text` / `--input`            | Широкие ячейки строки (`flex: 1`, высота 30px)                      |
 | `.ast__skeleton-cell--number`                      | Узкая ячейка номера (`flex: 0 0 30px`)                              |
-| `.ast__skeleton-modal` / `-header` / `-footer`     | Структура партиала `templates/parts/skeleton.php`                   |
+| `.ast__skeleton-root`                              | Внешняя обёртка партиала — зона оверлея плагина (прозрачный контейнер) |
+| `.ast__skeleton-card`                              | Внутренняя «карточка»: белый фон, тень, `max-width: 900px`, `max-height: 85vh` |
+| `.ast__skeleton-modal-header` / `-body` / `-footer` | Шапка/тело/футер варианта `modal-rows` (padding, бордеры, скролл тела) |
 
-Партиал `templates/parts/skeleton.php` (параметры `rows` default 5, `with_number` default false, `id`,
-`class`) рендерит только «строки с ячейками» — оверлей HTMX (`.htmx-request`) и модальная обёртка остаются зоной
-плагина. Keyframe `shimmer-animation` определён в либе (`src/scss/keyframes.scss`) — повторно не объявлять.
+Партиал `templates/parts/skeleton.php` рендерит **внешнюю обёртку** (root — на неё плагин накладывает оверлей через
+`id`/`class`, например `htmx-indicator`) и **внутреннюю карточку** (`.ast__skeleton-card`), внутри которой
+подключается шаблон выбранного варианта. Оверлей HTMX (`.htmx-request`) остаётся зоной плагина — классы модалки
+плагина попадают на root, а не на элементы тела. Keyframe `shimmer-animation` определён в либе
+(`src/scss/keyframes.scss`) — повторно не объявлять.
+
+Варианты регистрируются фильтром `art_settings_skeleton_variants` (`slug => абсолютный путь к PHP-шаблону`), встроены
+`modal-rows` (default) и `rows` (только строки, для инлайн-скелетонов — обычно с `card => false`). Параметры партиала:
+`variant` (default `modal-rows`), `rows` (default 5), `with_number` (default false), `id`, `class` (классы root),
+`card` (default true — рендерить внутреннюю обёртку), `class_card` (доп. классы карточки).
 
 Пример использования с `hx-indicator` (паттерн feed):
 
 ```php
 // В кастомном шаблоне плагина, через PageRenderer::render_template()
 $renderer->render_template( 'parts/skeleton.php', [
+    'variant'     => 'modal-rows',
     'rows'        => 15,
     'with_number' => true,
     'id'          => 'sklpf-mapping-skeleton',
     'class'       => 'htmx-indicator',
 ] );
+```
+
+Регистрация собственного варианта скелетона:
+
+```php
+add_filter( 'art_settings_skeleton_variants', function ( array $variants ): array {
+    $variants['spinner'] = __DIR__ . '/parts/skeleton/spinner.php';
+
+    return $variants;
+} );
 ```
 
 ### Уведомления

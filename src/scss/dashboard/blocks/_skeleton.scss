@@ -1,5 +1,21 @@
 @use "../variables" as *;
 
+// Внешняя обёртка (root) — зона оверлея плагина: позиционирование, затемнение
+// и центрирование накладывает плагин через свой CSS (например, по id + .htmx-request).
+// Здесь root остаётся прозрачным контейнером без собственных стилей.
+
+.ast__skeleton-card {
+	background: $color-bg-card;
+	border-radius: 4px;
+	box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+	display: flex;
+	flex-direction: column;
+	max-height: 85vh;
+	max-width: 900px;
+	overflow: hidden;
+	width: 100%;
+}
+
 .ast__skeleton {
 	background: linear-gradient(110deg, $skeleton-base 8%, $skeleton-shimmer 18%, $skeleton-base 33%);
 	background-size: 200% 100%;
@@ -46,11 +62,20 @@
 		display: flex;
 		align-items: center;
 		gap: 20px;
-		margin-bottom: 15px;
+		padding: 15px 20px;
+		border-bottom: 1px solid $color-border-light;
+	}
+
+	&-body {
+		padding: 20px;
+		overflow-y: auto;
 	}
 
 	&-footer {
 		display: flex;
 		justify-content: flex-end;
+		padding: 15px 20px;
+		border-top: 1px solid $color-border-light;
+		background: $wp-bg-soft;
 	}
 }

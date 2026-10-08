@@ -1,0 +1,1 @@
+<div class="ast__test-custom-skeleton"></div>

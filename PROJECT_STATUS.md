@@ -16,6 +16,23 @@
 
 ## 2. Завершённые задачи (Текущий этап)
 
+### 2.2.0 — универсальный скелетон: внутренняя карточка + варианты (2026-10-08)
+
+* [x] **Внутренняя обёртка скелетона:** партиал `templates/parts/skeleton.php` теперь рендерит внешнюю обёртку
+  (`ast__skeleton-root`, на неё плагин накладывает оверлей по `id`/`class`) и внутреннюю «карточку»
+  (`ast__skeleton-card`, белый фон, тень, `max-width: 900px`, `max-height: 85vh`). Классы модалки плагина больше не
+  ломают верстку — они попадают на root, а не на элементы тела.
+* [x] **Варианты (`variant` + фильтр):** регистрация через `art_settings_skeleton_variants` (slug => абсолютный путь
+  к PHP-шаблону). Встроены `modal-rows` (default) и `rows` (только строки, для инлайн-скелетонов с `card => false`).
+  Новые шаблоны: `templates/parts/skeleton/modal-rows.php`, `templates/parts/skeleton/rows.php`.
+* [x] **Новые параметры:** `variant`, `card` (default true), `class_card`; старые `rows`, `with_number`, `id`, `class`
+  сохранены (обратная совместимость).
+* [x] **SCSS:** `blocks/_skeleton.scss` — `.ast__skeleton-card`, паддинги/бордеры/скролл тела для
+  `.ast__skeleton-modal-header/-body/-footer`. `assets/css/ast-dashboard-style.min.css` пересобран.
+* [x] **Тесты:** `tests/Unit/SkeletonTest.php` (root+card, варианты `modal-rows`/`rows`, `card => false`,
+  `class_card`, кастомный вариант через фильтр, фолбэк) — 6 тестов / 21 ассерт, весь набор 55 тестов зелёный.
+* [x] **Docs:** `docs/ui-kit.md` — структура root+card, варианты, фильтр, пример регистрации; README changelog 2.2.0.
+
 ### 2.1.0 — скелетон, модификаторы badge/stage-metric, единый рендер нотисов (2026-10-07)
 
 * [x] **Скелетон загрузки в либе:** новый блок `blocks/_skeleton.scss` (`.ast__skeleton`, `.ast__skeleton-row`,
