@@ -57,11 +57,10 @@ $info_items = apply_filters( "ast_info_items_$menu_slug", $info_items );
 	
 	<hr class="wp-header-end">
 	
-	<div class="ast__notices">
-		<?php echo $message_notice; ?>
-	</div>
-	
 	<div class="ast__body hide-if-no-js ast__body--tab-<?php echo esc_attr( $active_tab ); ?>">
+		<div class="ast__notices">
+			<?php echo $message_notice; ?>
+		</div>
 		<form method="post"
 		      action=""
 		      class="ast__form">
