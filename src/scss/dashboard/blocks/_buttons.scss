@@ -1,0 +1,45 @@
+@use "../variables" as *;
+@use "sass:map";
+@use "sass:color";
+
+// Цветные модификаторы штатных кнопок WP (.button / .button-primary / .button-secondary).
+//
+// Поведение зависит от базового класса кнопки:
+//   .button-primary + .ast__btn--<цвет>  → заливка цветом, белый текст (например, красная кнопка удаления);
+//   .button / .button-secondary + .ast__btn--<цвет>  → цветная обводка и текст.
+//
+// Встроенные цвета: danger, success, warning, info (см. $button-colors).
+//
+// Примеры:
+//   <button type="button" class="button button-primary ast__btn--danger">Удалить</button>
+//   <button type="button" class="button button-secondary ast__btn--danger">Удалить</button>
+
+@each $name, $colors in $button-colors {
+	$base:  map.get( $colors, 'base' );
+	$hover: map.get( $colors, 'hover' );
+
+	.ast__btn--#{$name} {
+		border-color: $base !important;
+		color: $base !important;
+
+		&:hover,
+		&:focus {
+			border-color: $hover !important;
+			color: $hover !important;
+			background: color.change( $base, $alpha: 0.06 ) !important;
+		}
+
+		&.button-primary {
+			background: $base !important;
+			border-color: $base !important;
+			color: #ffffff !important;
+
+			&:hover,
+			&:focus {
+				background: $hover !important;
+				border-color: $hover !important;
+				color: #ffffff !important;
+			}
+		}
+	}
+}

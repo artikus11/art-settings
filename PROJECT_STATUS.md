@@ -16,6 +16,19 @@
 
 ## 2. Завершённые задачи (Текущий этап)
 
+### 2.3.0 — цветные модификаторы кнопок (2026-10-08)
+
+* [x] **Кнопки `.ast__btn--*`:** новый блок `blocks/_buttons.scss` — модификаторы `danger/success/warning/info` для
+  штатных кнопок WP. С `.button-primary` — заливка цветом и белый текст (например, красная кнопка удаления), с
+  `.button` / `.button-secondary` — цветная обводка и текст; hover/focus переключают на более тёмный тон с лёгкой
+  заливкой. `!important` — осознанно, чтобы перебивать стили ядра при любом порядке подключения CSS.
+* [x] **Палитра:** `$button-colors` (base/hover) в `src/scss/dashboard/_variables.scss` — danger `#d63638/#b32d2e`,
+  success `#46b450/#3c9342`, warning `#dba617/#b98a17`, info `$wp-accent/#135e96`.
+* [x] **Prebuilt:** `assets/css/ast-dashboard-style.min.css` пересобран — содержит `.ast__btn--*` (primary и outline).
+* [x] **Плагин feed:** удалён дубль `.button-remove`, в `admin-style.scss` подключен блок `dashboard/blocks/buttons`;
+  кнопка «Очистить маппинг» (`donors.php`) переведена на `.ast__btn--danger`. `admin-style.min.css` пересобран.
+* [x] **Docs:** `docs/ui-kit.md` — раздел «Кнопки»; README changelog 2.3.0.
+
 ### 2.2.0 — универсальный скелетон: внутренняя карточка + варианты (2026-10-08)
 
 * [x] **Внутренняя обёртка скелетона:** партиал `templates/parts/skeleton.php` теперь рендерит внешнюю обёртку

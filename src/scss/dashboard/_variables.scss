@@ -26,3 +26,11 @@ $wp-bg-soft: #f0f0f1;
 $wp-bg-diff: #fcf3cf;
 $wp-bg-summary: #f0f6fc;
 $wp-border-summary: #c5d9ea;
+
+// Палитра цветных кнопок .ast__btn--* (base — обводка/заливка, hover — состояние).
+$button-colors: (
+	'danger':  ( 'base': #d63638, 'hover': #b32d2e ),
+	'success': ( 'base': #46b450, 'hover': #3c9342 ),
+	'warning': ( 'base': #dba617, 'hover': #b98a17 ),
+	'info':    ( 'base': $wp-accent, 'hover': #135e96 ),
+);
