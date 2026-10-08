@@ -683,6 +683,12 @@ info-карточки.
 
 ## Changelog
 
+### 2.3.0
+
+* Цветные кнопки: модификаторы `.ast__btn--danger/--success/--warning/--info` для штатных кнопок WP. С
+  `.button-primary` — заливка цветом и белый текст, с `.button` / `.button-secondary` — цветная обводка и текст.
+  Блок `src/scss/dashboard/blocks/_buttons.scss`, палитра `$button-colors` в `_variables.scss`.
+
 ### 2.2.0
 
 * Универсальный скелетон: партиал `templates/parts/skeleton.php` рендерит внешнюю обёртку (root — зона оверлея
