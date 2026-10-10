@@ -191,4 +191,84 @@ class HtmxHandlerTest extends TestCase {
 		$this->assertSame( 'success', $test_htmx_sent[0][0] );
 		$this->assertSame( 'flushed', $test_htmx_sent[0][1]['result'] );
 	}
+
+
+	/**
+	 * Regression: на сети несколько skl-плагинов подписаны на один фильтр и каждый
+	 * возвращает собственную карту (не учитывая входящее значение). apply_filters
+	 * в такой схеме отдаёт результат только последнего подписчика — колбеки
+	 * остальных пропадают и роут отвечает «Unknown action». Хендлер должен
+	 * собирать карты всех подписчиков в merge.
+	 *
+	 * WP_Mock не пишет add_filter в $GLOBALS['wp_filter'], поэтому подписчики
+	 * подкладываются fake-hook-объектом (duck typing collect_callbacks).
+	 */
+	public function test_handle_merges_callbacks_from_multiple_filter_subscribers(): void {
+
+		global $test_htmx_sent;
+		global $wp_filter;
+
+		$handler = $this->create_handler();
+		$this->stub_nonce( true );
+		$this->stub_capability( true );
+
+		// Два «плагина»: каждый возвращает только свою карту (конвенция «верни своё»).
+		$hook = new class() {
+			public array $callbacks = [];
+		};
+
+		$hook->callbacks = [
+			10 => [
+				'plugin_a' => [
+					'function' => static function (): array {
+						return [
+							'plugin_a_action' => static function ( array $args ): string {
+								return 'a';
+							},
+						];
+					},
+					'accepted_args' => 1,
+				],
+				'plugin_b' => [
+					'function' => static function (): array {
+						return [
+							'plugin_b_action' => static function ( array $args ): string {
+								return 'b';
+							},
+						];
+					},
+					'accepted_args' => 1,
+				],
+			],
+		];
+
+		$wp_filter['art_settings_htmx_callbacks'] = $hook;
+
+		$_POST = [
+			'ast_nonce'  => 'abc',
+			'ast_action' => 'plugin_a_action',
+		];
+
+		$handler->handle();
+
+		$this->assertSame( 1, count( $test_htmx_sent ) );
+		$this->assertSame( 'success', $test_htmx_sent[0][0] );
+		$this->assertSame( 'a', $test_htmx_sent[0][1]['result'] );
+
+		// И второй плагин тоже доступен.
+		$test_htmx_sent = [];
+
+		$_POST = [
+			'ast_nonce'  => 'abc',
+			'ast_action' => 'plugin_b_action',
+		];
+
+		$handler->handle();
+
+		$this->assertSame( 1, count( $test_htmx_sent ) );
+		$this->assertSame( 'success', $test_htmx_sent[0][0] );
+		$this->assertSame( 'b', $test_htmx_sent[0][1]['result'] );
+
+		unset( $wp_filter['art_settings_htmx_callbacks'] );
+	}
 }
