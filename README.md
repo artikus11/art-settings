@@ -683,6 +683,14 @@ info-карточки.
 
 ## Changelog
 
+### 2.4.0
+
+* `Helpers\NoticeException` — исключение-носитель готового HTML-ответа для HTMX-колбеков
+  (message = готовый `Notice::html()`). Ошибка валидации на любом уровне вложенности колбека
+  идёт через `throw new NoticeException( Notice::html(...) )`; catch на верхнем уровне
+  возвращает HTML в JSON `{ result }` без обрыва ob-буфера `wp_die()`. Паттерн перенесён
+  из skl-product-feed — не копируйте локальные RenderException-классы в плагинах.
+
 ### 2.3.0
 
 * Цветные кнопки: модификаторы `.ast__btn--danger/--success/--warning/--info` для штатных кнопок WP. С

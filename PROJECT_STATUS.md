@@ -16,6 +16,17 @@
 
 ## 2. Завершённые задачи (Текущий этап)
 
+### 2.4.0 — NoticeException: перенос паттерна HTMX-нотисов в либу (2026-10-12)
+
+* [x] **`Helpers\NoticeException`** — исключение-носитель готового HTML-ответа для HTMX-колбеков
+  (message = готовый `Notice::html()`; catch на верхнем уровне возвращает HTML в JSON `{ result }`
+  без обрыва ob-буфера `wp_die()`). Паттерн мигрировал из skl-product-feed (`RenderException`) —
+  до этого каждый плагин с HTMX-колбеками копировал локальный класс.
+* [x] **Docblock `Notice`** — зафиксирован парный паттерн: ошибка валидации на любом уровне
+  вложенности → `throw new NoticeException( Notice::html(...) )`.
+* [x] **Плагин feed:** локальный `RenderException` удалён, `CategoryActionService` переведён на
+  `Art\Settings\Helpers\NoticeException`.
+
 ### 2.3.0 — цветные модификаторы кнопок (2026-10-08)
 
 * [x] **Кнопки `.ast__btn--*`:** новый блок `blocks/_buttons.scss` — модификаторы `danger/success/warning/info` для

@@ -8,6 +8,10 @@ namespace Art\Settings\Helpers;
  * Единый вывод ast__notice вместо собственных копий View::notice() в плагинах:
  * не требует инстанса PageRenderer, работает с дефолтным шаблоном либы и
  * уважает фильтр art_settings_template_path.
+ *
+ * Паттерн HTMX-колбеков: ошибка валидации на любом уровне вложенности идёт
+ * через NoticeException( self::html(...) ) — catch на верхнем уровне возвращает
+ * HTML в JSON { result } без обрыва буфера wp_die().
  */
 final class Notice {
 
