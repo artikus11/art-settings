@@ -36,6 +36,7 @@ class SettingsManager {
 		}, PHP_INT_MAX );
 		add_filter( 'admin_body_class', [ $this, 'admin_body_class' ] );
 		add_action( 'admin_init', [ $this, 'handle_action' ] );
+		add_action( 'admin_enqueue_scripts', [ $this, 'register_assets' ], 0 );
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_assets' ] );
 
 		if ( true === ( $this->config['htmx'] ?? false ) ) {
@@ -301,10 +302,89 @@ class SettingsManager {
 	}
 
 
+	/**
+	 * Регистрация общих ассетов либы на всех админ-страницах.
+	 *
+	 * Приоритет 0 — раньше enqueue-колбеков потребителей на том же хуке. Хендлы без суффикса
+	 * menu_slug — единый источник: копия либы, из которой загружен сам класс (PHP подключает
+	 * класс один раз, поэтому URL совпадает с кодом, который рендерит UI). Плагины подключают
+	 * хендлы при необходимости: wp_enqueue_style( 'ast-dashboard-style' ) и т.д. — в том числе
+	 * на собственных админ-страницах вне art/settings.
+	 */
+	public function register_assets(): void {
+
+		$base_dir = $this->get_self_root();
+
+		if ( defined( 'WP_CONTENT_DIR' ) && ! str_starts_with( $base_dir, $this->normalize_dir( (string) WP_CONTENT_DIR ) ) ) {
+			return;
+		}
+
+		$base_url = $this->get_assets_base_url( $base_dir );
+
+		$assets = [
+			'ast-admin-style'     => [
+				'type'      => 'style',
+				'rel_path'  => 'css/ast-admin-style.css',
+				'deps'      => [],
+				'in_footer' => false,
+			],
+			'ast-dashboard-style' => [
+				'type'      => 'style',
+				'rel_path'  => 'css/ast-dashboard-style.css',
+				'deps'      => [],
+				'in_footer' => false,
+			],
+			'ast-admin-script'    => [
+				'type'      => 'script',
+				'rel_path'  => 'js/ast-admin-script.js',
+				'deps'      => [ 'jquery' ],
+				'in_footer' => true,
+			],
+			'ast-admin-htmx'      => [
+				'type'      => 'script',
+				'rel_path'  => 'js/ast-admin-htmx.js',
+				'deps'      => [],
+				'in_footer' => true,
+			],
+		];
+
+		foreach ( $assets as $handle => $asset ) {
+			$is_registered = 'style' === $asset['type']
+				? wp_style_is( $handle, 'registered' )
+				: wp_script_is( $handle, 'registered' );
+
+			if ( $is_registered ) {
+				continue;
+			}
+
+			$resolved = $this->resolve_asset_file( $base_dir, $asset['rel_path'] );
+
+			if ( null === $resolved ) {
+				continue;
+			}
+
+			$file_url = $base_url . $resolved['rel'];
+
+			if ( 'style' === $asset['type'] ) {
+				wp_register_style( $handle, $file_url, $asset['deps'], $resolved['version'] );
+			} else {
+				wp_register_script( $handle, $file_url, $asset['deps'], $resolved['version'], $asset['in_footer'] );
+			}
+		}
+	}
+
+
 	public function enqueue_assets( string $hook_suffix ): void {
 
 		if ( ! $this->is_settings_hook( $hook_suffix ) ) {
 			return;
+		}
+
+		// Dashboard-блоки ui-kit (ast__*) нужны и хрому либы (skeleton, notice), и шаблонам
+		// потребителя. Потребители, собирающие dashboard-SCSS в собственный admin-style,
+		// отключают через 'dashboard_style' => false.
+		if ( false !== ( $this->config['dashboard_style'] ?? true ) ) {
+			wp_enqueue_style( 'ast-dashboard-style' );
 		}
 
 		$base_dir = $this->get_library_root();
@@ -363,6 +443,58 @@ class SettingsManager {
 		}
 
 		return str_ends_with( $hook_suffix, '_page_' . $menu_slug );
+	}
+
+
+	/**
+	 * URL-адресуемый корень копии либы, из которой загружен сам класс SettingsManager.
+	 *
+	 * Класс загружен один раз, и зарегистрированные хендлы должны указывать на ассеты той же
+	 * копии, чей PHP-код рендерит UI. __DIR__ резолвится в реальный путь и в dev-среде
+	 * (junction vendor/art/settings → внешний клон) оказывается вне wp-content, поэтому сначала
+	 * ищем кандидата из get_library_root_candidates() с тем же realpath — его строковый путь
+	 * остаётся внутри wp-content и дает корректный URL.
+	 */
+	protected function get_self_root(): string {
+
+		$self = $this->normalize_dir( dirname( __DIR__, 2 ) );
+
+		foreach ( $this->get_library_root_candidates() as $candidate ) {
+			if ( is_dir( $candidate . '/assets' ) && realpath( $candidate ) === realpath( $self ) ) {
+				return $this->normalize_dir( $candidate );
+			}
+		}
+
+		return $self;
+	}
+
+
+	/**
+	 * Предпочитает min-версию ассета, при отсутствии — канонический файл.
+	 *
+	 * @return array{rel:string, version:string}|null
+	 */
+	protected function resolve_asset_file( string $base_dir, string $rel_path ): ?array {
+
+		$dot = strrpos( $rel_path, '.' );
+
+		if ( false === $dot ) {
+			return null;
+		}
+
+		$assets_dir = $base_dir . '/assets/';
+		$min_rel    = substr( $rel_path, 0, $dot ) . '.min' . substr( $rel_path, $dot );
+
+		foreach ( [ $min_rel, $rel_path ] as $candidate ) {
+			if ( file_exists( $assets_dir . $candidate ) ) {
+				return [
+					'rel'     => $candidate,
+					'version' => (string) filemtime( $assets_dir . $candidate ),
+				];
+			}
+		}
+
+		return null;
 	}
 
 

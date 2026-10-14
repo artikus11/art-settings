@@ -26,6 +26,16 @@
   вложенности → `throw new NoticeException( Notice::html(...) )`.
 * [x] **Плагин feed:** локальный `RenderException` удалён, `CategoryActionService` переведён на
   `Art\Settings\Helpers\NoticeException`.
+* [x] **Регистрация ассетов либы (2026-10-14):** `SettingsManager::register_assets()` на
+  `admin_enqueue_scripts` (приоритет 0) регистрирует хендлы `ast-admin-style`,
+  `ast-dashboard-style`, `ast-admin-script`, `ast-admin-htmx` (идемпотентно; источник —
+  копия либы из-под загруженного класса; `get_self_root()` берёт строковый путь кандидата
+  с тем же `realpath`, т.к. `__DIR__` сквозь junction резолвится вне wp-content; fail-open
+  при неадресуемом корне). `enqueue_assets()` автоподключает `ast-dashboard-style` на
+  страницах настроек (opt-out `'dashboard_style' => false` для потребителей со собственной
+  dashboard-сборкой). Повод: skl-title-registry без webpack-сборки остался без носителя
+  классов `ast__*` (патч 2026-10-14-02.03), первая версия фикса — ручной enqueue vendor-копии
+  в плагине — отменена как костыль.
 
 ### 2.3.0 — цветные модификаторы кнопок (2026-10-08)
 

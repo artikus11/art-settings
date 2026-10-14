@@ -353,11 +353,13 @@ class SettingsManagerTest extends TestCase {
 		$test_enqueued_assets = [];
 
 		WP_Mock::userFunction( 'wp_enqueue_style', [
-			'return' => static function ( $handle, $src, $deps, $ver ) {
+			'return' => static function ( ...$args ) {
 
 				global $test_enqueued_assets;
 
-				$test_enqueued_assets[] = [ $handle, $src, $deps, $ver, false ];
+				// Хендл-онли вызовы (зарегистрированные либой ассеты) добиваются до
+				// пятёрки [handle, src, deps, ver, in_footer=false] как у полного вызова.
+				$test_enqueued_assets[] = array_pad( $args, 5, false );
 			},
 		] );
 
@@ -386,6 +388,39 @@ class SettingsManagerTest extends TestCase {
 		$manager->enqueue_assets( 'toplevel_page_sklds-settings' );
 
 		$this->assertTrue( ! empty( $test_enqueued_assets ), 'ожидались вызовы wp_enqueue_*' );
+
+		// Dashboard-стиль подключается по умолчанию (хром либы + шаблоны потребителя).
+		$dashboard_default = array_filter(
+			$test_enqueued_assets,
+			static function ( $args ) {
+
+				return 'ast-dashboard-style' === ( $args[0] ?? '' );
+			}
+		);
+		$this->assertCount( 1, $dashboard_default, 'ожидался ast-dashboard-style по умолчанию' );
+
+		// Opt-out 'dashboard_style' => false — дубль для потребителей со своей сборкой.
+		$test_enqueued_assets = [];
+
+		$manager_optout = new TestableSettingsManager( [
+			'option_key'      => 'sklds_options',
+			'menu'            => [ 'menu_slug' => 'sklds-settings' ],
+			'assets_dir'      => '/tmp/custom-art-settings',
+			'assets_url'      => 'https://example.com/wp-content/custom-art-settings/assets',
+			'dashboard_style' => false,
+			'tabs'            => [],
+		] );
+
+		$manager_optout->enqueue_assets( 'toplevel_page_sklds-settings' );
+
+		$dashboard_optout = array_filter(
+			$test_enqueued_assets,
+			static function ( $args ) {
+
+				return 'ast-dashboard-style' === ( $args[0] ?? '' );
+			}
+		);
+		$this->assertCount( 0, $dashboard_optout, "'dashboard_style' => false отключает ast-dashboard-style" );
 
 		$handles_without_htmx = array_filter(
 			$test_enqueued_assets,

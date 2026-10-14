@@ -676,8 +676,20 @@ info-карточки.
 ### Готовый CSS
 
 Для плагинов, которые не собирают свои стили, собирается пребилт
-`assets/css/ast-dashboard-style.min.css` (webpack entry `ast-dashboard-style`). Подключить его можно, например, в
-`admin_enqueue_scripts` страницы настроек.
+`assets/css/ast-dashboard-style.min.css` (webpack entry `ast-dashboard-style`).
+
+С версии 2.4.0 либа сама регистрирует готовые ассеты на всех админ-страницах
+(`admin_enqueue_scripts`, приоритет 0): хендлы `ast-admin-style`, `ast-dashboard-style`,
+`ast-admin-script`, `ast-admin-htmx`. Подключение — одним вызовом, без ручных URL до
+vendor-копий:
+
+```php
+wp_enqueue_style( 'ast-dashboard-style' );
+```
+
+На страницах настроек, рендерящихся через `SettingsManager`, dashboard-стиль подключается
+автоматически; потребители со собственной dashboard-сборкой отключают дубль через
+`'dashboard_style' => false` в конфиге.
 
 ---
 
@@ -690,6 +702,17 @@ info-карточки.
   идёт через `throw new NoticeException( Notice::html(...) )`; catch на верхнем уровне
   возвращает HTML в JSON `{ result }` без обрыва ob-буфера `wp_die()`. Паттерн перенесён
   из skl-product-feed — не копируйте локальные RenderException-классы в плагинах.
+* Регистрация общих ассетов: `SettingsManager::register_assets()` на `admin_enqueue_scripts`
+  (приоритет 0) регистрирует стабильные хендлы `ast-admin-style`, `ast-dashboard-style`,
+  `ast-admin-script`, `ast-admin-htmx` — плагины подключают их по необходимости
+  (`wp_enqueue_style( 'ast-dashboard-style' )`), в том числе на собственных админ-страницах
+  вне art/settings. Источник — копия либы, из которой загружен класс (`get_self_root()`:
+  строковый путь кандидата с тем же `realpath`, т.к. `__DIR__` сквозь junction в dev уходит
+  вне wp-content). Идемпотентно, min-версия предпочтительнее, fail-open при неадресуемом корне.
+* Автоподключение dashboard-стиля: `enqueue_assets()` на страницах настроек либы дополнительно
+  подключает `ast-dashboard-style` (классы `ast__*` нужны хрому либы — skeleton/notice — и
+  шаблонам потребителя). Потребители со собственной сборкой dashboard-SCSS отключают через
+  `'dashboard_style' => false`. Ручное подключение vendor-копий CSS в плагинах — не использовать.
 
 ### 2.3.0
 
