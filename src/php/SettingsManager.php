@@ -42,13 +42,6 @@ class SettingsManager {
 		if ( true === ( $this->config['htmx'] ?? false ) ) {
 			$handler = new \Art\Settings\Services\HtmxHandler( $this->config );
 			$handler->register();
-
-			if ( true === ( $this->config['debug_logging'] ?? false ) ) {
-				error_log( sprintf(
-					'[art-settings][htmx][debug] handler registered for slug %s',
-					(string) ( $this->config['menu']['menu_slug'] ?? '' )
-				) );
-			}
 		}
 	}
 

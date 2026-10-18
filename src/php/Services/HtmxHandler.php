@@ -40,8 +40,6 @@ class HtmxHandler {
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce проверен выше.
 		$action = sanitize_key( wp_unslash( $_POST['ast_action'] ?? '' ) );
 
-		$this->debug_log( sprintf( 'dispatch start action=%s', $action ) );
-
 		if ( ! current_user_can( $this->config['menu']['capability'] ?? 'manage_options' ) ) {
 			$this->error_log( 'insufficient capability' );
 			wp_send_json_error( [ 'message' => 'Forbidden.' ], 403 );
@@ -60,11 +58,7 @@ class HtmxHandler {
 
 		$args = $this->resolve_args();
 
-		$this->debug_log( sprintf( 'dispatch %s -> %s', $action, is_callable( $callback ) ? 'callable' : 'array' ) );
-
 		$result = call_user_func( $callback, $args );
-
-		$this->debug_log( 'dispatch done action=' . $action );
 
 		wp_send_json_success( [ 'result' => $result ] );
 	}
@@ -174,16 +168,6 @@ class HtmxHandler {
 		}
 
 		return $args;
-	}
-
-
-	protected function debug_log( string $message ): void {
-
-		if ( true !== ( $this->config['debug_logging'] ?? false ) ) {
-			return;
-		}
-
-		error_log( sprintf( '[art-settings][htmx][debug] %s', $message ) );
 	}
 
 
