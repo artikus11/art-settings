@@ -194,55 +194,34 @@ class HtmxHandlerTest extends TestCase {
 
 
 	/**
-	 * Regression: на сети несколько skl-плагинов подписаны на один фильтр и каждый
-	 * возвращает собственную карту (не учитывая входящее значение). apply_filters
-	 * в такой схеме отдаёт результат только последнего подписчика — колбеки
-	 * остальных пропадают и роут отвечает «Unknown action». Хендлер должен
-	 * собирать карты всех подписчиков в merge.
-	 *
-	 * WP_Mock не пишет add_filter в $GLOBALS['wp_filter'], поэтому подписчики
-	 * подкладываются fake-hook-объектом (duck typing collect_callbacks).
+	 * Regression: на сети несколько skl-плагинов подписаны на один фильтр.
+	 * Конвенция подписчика — merge (array_merge( $maps, $own )): результат
+	 * apply_filters — объединённая карта всех плагинов, и роутер резолвит
+	 * действия каждого из них независимо от порядка загрузки. Подписчик,
+	 * затирающий входящее значение («верни своё»), теряет чужие действия —
+	 * этот контракт ловится regression-чеком сети на живых плагинах.
 	 */
 	public function test_handle_merges_callbacks_from_multiple_filter_subscribers(): void {
 
 		global $test_htmx_sent;
-		global $wp_filter;
 
 		$handler = $this->create_handler();
 		$this->stub_nonce( true );
 		$this->stub_capability( true );
 
-		// Два «плагина»: каждый возвращает только свою карту (конвенция «верни своё»).
-		$hook = new class() {
-			public array $callbacks = [];
-		};
+		// Результат цепочки merge-подписчиков: карты двух «плагинов» объединены.
+		WP_Mock::onFilter( 'art_settings_htmx_callbacks' )
+			->with( [] )
+			->reply( [
+				'plugin_a_action' => static function ( array $args ): string {
 
-		$hook->callbacks = [
-			10 => [
-				'plugin_a' => [
-					'function' => static function (): array {
-						return [
-							'plugin_a_action' => static function ( array $args ): string {
-								return 'a';
-							},
-						];
-					},
-					'accepted_args' => 1,
-				],
-				'plugin_b' => [
-					'function' => static function (): array {
-						return [
-							'plugin_b_action' => static function ( array $args ): string {
-								return 'b';
-							},
-						];
-					},
-					'accepted_args' => 1,
-				],
-			],
-		];
+					return 'a';
+				},
+				'plugin_b_action' => static function ( array $args ): string {
 
-		$wp_filter['art_settings_htmx_callbacks'] = $hook;
+					return 'b';
+				},
+			] );
 
 		$_POST = [
 			'ast_nonce'  => 'abc',
@@ -268,7 +247,5 @@ class HtmxHandlerTest extends TestCase {
 		$this->assertSame( 1, count( $test_htmx_sent ) );
 		$this->assertSame( 'success', $test_htmx_sent[0][0] );
 		$this->assertSame( 'b', $test_htmx_sent[0][1]['result'] );
-
-		unset( $wp_filter['art_settings_htmx_callbacks'] );
 	}
 }

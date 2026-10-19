@@ -88,59 +88,20 @@ class HtmxHandler {
 
 
 	/**
-	 * Собирает карты колбеков всех подписчиков фильтра art_settings_htmx_callbacks.
+	 * Карта колбеков всех плагинов сети через фильтр art_settings_htmx_callbacks.
 	 *
-	 * На сети активно несколько skl-плагинов с HTMX-страницами, и каждый подписчик
-	 * возвращает собственную карту (конвенция «верни своё»), не учитывая входящее
-	 * значение. apply_filters в такой схеме отдаёт результат только последнего
-	 * подписчика — колбеки остальных плагинов пропадают («Unknown action»).
-	 * Здесь каждый подписчик вызывается отдельно, возвраты мержатся; подписчики
-	 * с merge-конвенцией (array_merge($value, $own)) при $value=[] работают так же.
+	 * Конвенция подписчика — merge: он принимает входящую карту и возвращает
+	 * array_merge( $maps, $own_map ). Тогда apply_filters собирает карты всех
+	 * подписчиков независимо от порядка загрузки плагинов и от того, чья копия
+	 * роутера выиграла автолоад (либа ездит в vendor каждого skl-плагина).
 	 *
 	 * @return array<string, callable>
 	 */
 	protected function collect_callbacks(): array {
 
-		$hook = $GLOBALS['wp_filter']['art_settings_htmx_callbacks'] ?? null;
+		$filtered = apply_filters( 'art_settings_htmx_callbacks', [] );
 
-		// Duck typing: WP_Hook в проде; в юнит-среде — любой объект с ->callbacks
-		// (массив приоритет => [definition => ['function' => callable]]).
-		$is_hook = ( $hook instanceof \WP_Hook )
-			|| ( is_object( $hook ) && isset( $hook->callbacks ) && is_array( $hook->callbacks ) );
-
-		if ( ! $is_hook ) {
-			$filtered = apply_filters( 'art_settings_htmx_callbacks', [] );
-
-			return is_array( $filtered ) ? $filtered : [];
-		}
-
-		$merged = [];
-
-		foreach ( $hook->callbacks as $callbacks ) {
-			foreach ( $callbacks as $definition ) {
-
-				$callable = $definition['function'] ?? null;
-
-				if ( ! is_callable( $callable ) ) {
-					continue;
-				}
-
-				$result = call_user_func( $callable, [] );
-
-				if ( is_array( $result ) ) {
-					$merged = array_merge( $merged, $result );
-				}
-			}
-		}
-
-		// Fallback: подписчиков нет или структура нестандартна — обычный прогон фильтра.
-		if ( [] === $merged ) {
-			$filtered = apply_filters( 'art_settings_htmx_callbacks', [] );
-
-			return is_array( $filtered ) ? $filtered : [];
-		}
-
-		return $merged;
+		return is_array( $filtered ) ? $filtered : [];
 	}
 
 
